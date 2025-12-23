@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
-  AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe
+  AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
+  XCircle
 } from 'lucide-react';
 
 // --- Firebase Imports ---
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, collection, addDoc, query, orderBy, onSnapshot, 
-  serverTimestamp, limit, doc, updateDoc 
+  serverTimestamp, limit, doc, updateDoc, deleteDoc 
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
 // ==================================================================
-// 🔑 [設定] ユーザー様のBENJI HAIR SHOPキーが適用されています。
+// 🔑 [설정] Firebase 설정
 // ==================================================================
 const firebaseConfig = {
   apiKey: "AIzaSyB0qWlZqE91mOxC6eL4l5MbDsvu11RsXtI",
@@ -37,7 +38,7 @@ try {
 }
 
 // ==================================================================
-// 🌐 TRANSLATION DICTIONARY (다국어 사전)
+// 🌐 TRANSLATION DICTIONARY
 // ==================================================================
 const TRANSLATIONS = {
   ja: {
@@ -48,8 +49,12 @@ const TRANSLATIONS = {
     skip: "スキップ",
     submit: "送信する",
     submitting: "送信中...",
-    error_config: "設定エラー：App.jsのAPI Keyを確認してください。",
-    error_save: "保存に失敗しました。",
+    delete: "削除",
+    delete_confirm_msg: "本当に削除しますか？",
+    delete_yes: "はい、削除",
+    delete_no: "キャンセル",
+    delete_success: "削除しました。",
+    error_save: "処理に失敗しました。権限を確認してください。",
     // Landing
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
@@ -81,7 +86,7 @@ const TRANSLATIONS = {
     opt_scalp: ["乾燥", "脂性", "普通", "その他"],
     q_concern: "3. お悩み（複数選択可）",
     opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
-    q_history: "4. 最近の施術履歴",
+    q_history: "4. 最近の施術経験（パーマ、カラー、ブリーチなど）",
     opt_yes: "あり",
     opt_no: "なし",
     q_history_type: "施術の種類（複数選択可）",
@@ -90,38 +95,42 @@ const TRANSLATIONS = {
     opt_time: ["選択してください", "1ヶ月以内", "3ヶ月以内", "6ヶ月以上"],
     // Step 2
     step2_title: "詳細カウンセリング",
-    step2_desc: "より快適なサービスのため、任意で入力してください。",
+    step2_desc: "より快適なサービスのため、任意で入力してください。\n全ての項目に答える必要はありません。",
     q_massage: "シャンプー＆マッサージの力加減",
     massage_desc_1: "ご希望に合わせて",
     massage_desc_2: "より快適なシャンプー・頭皮ケアを提供いたします。",
-    opt_massage: [{v:'soft', l:'弱め'}, {v:'normal', l:'普通'}, {v:'strong', l:'強め'}, {v:'none', l:'おまかせ'}],
+    opt_massage: [{v:'soft', l:'弱め'}, {v:'normal', l:'普通'}, {v:'strong', l:'強め'}],
     q_visit_freq: "美容室に行く頻度",
     opt_visit: ["選択しない", "毎週", "2~4週間", "2~3ヶ月", "6ヶ月以上"],
     q_shampoo_freq: "シャンプーの頻度",
     opt_shampoo: ["選択しない", "毎日", "2日に1回", "週2回以下"],
-    q_products: "使用中のヘアケア製品",
+    q_products: "使用中の製品 (例: シャンプー、リンス等)",
+    ph_prod_type: "製品の種類 (例: シャンプー)",
     ph_prod_name: "製品名",
-    ph_prod_purpose: "目的",
-    q_tools: "スタイリング道具",
-    ph_tool_name: "道具名（アイロン等）",
-    ph_tool_freq: "頻度",
-    q_meds: "服用中のお薬",
-    ph_med_name: "薬の名前",
-    ph_med_purpose: "目的",
     add_item: "項目を追加",
+    // Step 2 New Items
+    q_styling_pref: "仕上げスタイリングの好み",
+    opt_styling: ["ナチュラル", "ボリューム重視", "しっかり固定", "軽め"],
+    q_med_check: "現在、施術に影響する可能性のあるお薬を服用中ですか？",
+    q_med_check_yes: "はい（要相談）",
+    q_med_check_no: "いいえ",
+    q_med_detail: "該当する項目を選択してください（複数選択可）",
+    opt_med_detail: ["肌・頭皮が敏感になる薬", "カラー/パーマに影響する薬", "その他"],
+    ph_med_other: "詳細をご記入ください",
     q_requests: "その他ご要望",
     // Step 3 (Confirm)
     step3_title: "入力内容の確認",
     section_basic: "基本情報",
     section_status: "状態まとめ",
     section_care: "ケアの好み・習慣",
-    section_items: "使用製品・道具",
+    section_pref: "仕上げ・安全確認",
+    section_items: "使用製品",
     section_req: "ご要望",
-    // Submitted
+    // Submitted Screen
     submitted_title: "受付が完了しました！",
     submitted_desc: "担当スタイリストが確認後、\nご案内いたします。",
     submitted_wait: "少々お待ちください。",
-    back_to_top: "トップに戻る",
+    back_to_top: "トップへ戻る",
     // Admin
     admin_dashboard: "BENJI HAIR DASHBOARD",
     waiting_list: "待機リスト",
@@ -129,9 +138,8 @@ const TRANSLATIONS = {
     status_progress: "施術中",
     status_completed: "施術完了",
     critical_alert: "施術前の注意事項 (Critical)",
-    start_service: "施術開始",
-    complete_service: "完了",
-    select_customer: "お客様を選択してください"
+    select_customer: "お客様を選択してください",
+    med_alert_label: "服薬/健康状態"
   },
   ko: {
     loading: "로딩 중...",
@@ -140,8 +148,12 @@ const TRANSLATIONS = {
     skip: "건너뛰기",
     submit: "제출하기",
     submitting: "전송 중...",
-    error_config: "설정 오류: App.js 상단의 API Key를 확인해주세요.",
-    error_save: "저장에 실패했습니다.",
+    delete: "삭제",
+    delete_confirm_msg: "정말 삭제하시겠습니까?",
+    delete_yes: "네, 삭제",
+    delete_no: "취소",
+    delete_success: "삭제되었습니다.",
+    error_save: "저장/삭제 중 오류가 발생했습니다.",
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
     start_counseling: "상담 시작하기",
@@ -169,7 +181,7 @@ const TRANSLATIONS = {
     opt_scalp: ["건성", "지성", "보통", "기타"],
     q_concern: "3. 고민 사항 (중복 가능)",
     opt_concern: ["탈모", "손상", "건조", "끊어짐/갈라짐", "비듬", "가려움", "없음"],
-    q_history: "4. 최근 시술 이력",
+    q_history: "4. 최근 시술 경험 (ex. 펌, 염색, 탈색)",
     opt_yes: "있음",
     opt_no: "없음",
     q_history_type: "시술 종류 (중복 가능)",
@@ -177,31 +189,34 @@ const TRANSLATIONS = {
     q_last_time: "마지막 시술 시기",
     opt_time: ["선택해주세요", "1개월 이내", "3개월 이내", "6개월 이상"],
     step2_title: "상세 상담",
-    step2_desc: "더 편안한 서비스를 위해 선택적으로 입력해 주세요.",
+    step2_desc: "더 편안한 서비스를 위해 선택적으로 입력해 주세요.\n모든 항목에 답하지 않으셔도 괜찮습니다.",
     q_massage: "샴푸 & 두피 마사지 강도",
     massage_desc_1: "말씀해주신 선호도에 맞춰",
     massage_desc_2: "보다 편안한 샴푸 및 두피 케어를 제공해드립니다.",
-    opt_massage: [{v:'soft', l:'약하게'}, {v:'normal', l:'보통'}, {v:'strong', l:'강하게'}, {v:'none', l:'알아서'}],
+    opt_massage: [{v:'soft', l:'약하게'}, {v:'normal', l:'보통'}, {v:'strong', l:'강하게'}],
     q_visit_freq: "미용실 방문 주기",
     opt_visit: ["선택 안 함", "매주", "2~4주", "2~3개월", "6개월 이상"],
     q_shampoo_freq: "샴푸 빈도",
     opt_shampoo: ["선택 안 함", "매일", "2일에 1회", "주 2회 이하"],
-    q_products: "사용 중인 제품",
+    q_products: "사용 중인 제품 (ex. 샴푸, 컨디셔너 등 헤어관련제품)",
+    ph_prod_type: "제품 종류 (ex. 샴푸)",
     ph_prod_name: "제품명",
-    ph_prod_purpose: "목적",
-    q_tools: "스타일링 도구",
-    ph_tool_name: "도구명 (고데기 등)",
-    ph_tool_freq: "빈도",
-    q_meds: "복용 중인 약물",
-    ph_med_name: "약 이름",
-    ph_med_purpose: "목적",
     add_item: "항목 추가",
+    q_styling_pref: "마무리 스타일링 선호",
+    opt_styling: ["자연스럽게", "볼륨 강조", "고정력 있게", "가볍게"],
+    q_med_check: "현재 미용 시술에 영향을 줄 수 있는 약물을 복용 중이신가요?",
+    q_med_check_yes: "있음 (시술 전 상담 필요)",
+    q_med_check_no: "없음",
+    q_med_detail: "해당되는 항목이 있다면 선택해주세요 (복수 선택)",
+    opt_med_detail: ["피부·두피가 예민해질 수 있는 약", "염색/펌에 영향이 있을 수 있는 약", "기타"],
+    ph_med_other: "상세 내용을 적어주세요",
     q_requests: "기타 요청사항",
     step3_title: "작성 내용 확인",
     section_basic: "기본 정보",
     section_status: "상태 요약",
     section_care: "케어 선호도",
-    section_items: "사용 제품/도구",
+    section_pref: "스타일링/안전",
+    section_items: "사용 제품",
     section_req: "요청사항",
     submitted_title: "접수가 완료되었습니다!",
     submitted_desc: "담당 디자이너가 곧 확인 후\n안내해 드리겠습니다.",
@@ -213,9 +228,8 @@ const TRANSLATIONS = {
     status_progress: "시술 중",
     status_completed: "시술 완료",
     critical_alert: "시술 전 주의사항 (Critical)",
-    start_service: "시술 시작",
-    complete_service: "완료",
-    select_customer: "고객을 선택해주세요"
+    select_customer: "고객을 선택해주세요",
+    med_alert_label: "약물/안전 체크"
   },
   en: {
     loading: "Loading...",
@@ -224,8 +238,12 @@ const TRANSLATIONS = {
     skip: "Skip",
     submit: "Submit",
     submitting: "Submitting...",
-    error_config: "Config Error: Check API Key in App.js.",
-    error_save: "Failed to save.",
+    delete: "Delete",
+    delete_confirm_msg: "Are you sure?",
+    delete_yes: "Yes",
+    delete_no: "No",
+    delete_success: "Deleted successfully.",
+    error_save: "Error saving/deleting data.",
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
     start_counseling: "Start Counseling",
@@ -253,7 +271,7 @@ const TRANSLATIONS = {
     opt_scalp: ["Dry", "Oily", "Normal", "Other"],
     q_concern: "3. Concerns (Multiple)",
     opt_concern: ["Hair Loss", "Damage", "Dryness", "Split Ends", "Dandruff", "Itchiness", "None"],
-    q_history: "4. Recent History",
+    q_history: "4. Recent History (Perm, Color, Bleach, etc.)",
     opt_yes: "Yes",
     opt_no: "No",
     q_history_type: "Treatment Type",
@@ -261,31 +279,34 @@ const TRANSLATIONS = {
     q_last_time: "Last Treatment",
     opt_time: ["Select", "Within 1 mo", "Within 3 mo", "Over 6 mo"],
     step2_title: "Detailed Counseling",
-    step2_desc: "Optional details for better service.",
+    step2_desc: "Optional. You may skip this section.",
     q_massage: "Massage Intensity",
     massage_desc_1: "We provide comfortable care",
     massage_desc_2: "based on your preference.",
-    opt_massage: [{v:'soft', l:'Soft'}, {v:'normal', l:'Normal'}, {v:'strong', l:'Strong'}, {v:'none', l:'Any'}],
+    opt_massage: [{v:'soft', l:'Soft'}, {v:'normal', l:'Normal'}, {v:'strong', l:'Strong'}],
     q_visit_freq: "Visit Frequency",
     opt_visit: ["None", "Weekly", "2-4 Weeks", "2-3 Months", "6+ Months"],
     q_shampoo_freq: "Shampoo Frequency",
     opt_shampoo: ["None", "Daily", "Every 2 days", "Twice a week"],
-    q_products: "Products Used",
+    q_products: "Products Used (ex. Shampoo, Conditioner)",
+    ph_prod_type: "Product Type",
     ph_prod_name: "Product Name",
-    ph_prod_purpose: "Purpose",
-    q_tools: "Styling Tools",
-    ph_tool_name: "Tool Name",
-    ph_tool_freq: "Freq",
-    q_meds: "Medications",
-    ph_med_name: "Name",
-    ph_med_purpose: "Purpose",
     add_item: "Add Item",
+    q_styling_pref: "Styling Preference",
+    opt_styling: ["Natural", "Volume", "Strong Hold", "Light"],
+    q_med_check: "Are you taking medication that affects treatment?",
+    q_med_check_yes: "Yes (Need consult)",
+    q_med_check_no: "No",
+    q_med_detail: "Select applicable items",
+    opt_med_detail: ["Sensitive Skin/Scalp", "Affects Color/Perm", "Other"],
+    ph_med_other: "Please provide details",
     q_requests: "Other Requests",
     step3_title: "Confirmation",
     section_basic: "Basic Info",
     section_status: "Hair Status",
     section_care: "Preferences",
-    section_items: "Products/Tools",
+    section_pref: "Styling/Safety",
+    section_items: "Products",
     section_req: "Requests",
     submitted_title: "Submission Complete!",
     submitted_desc: "Your stylist will check and\nguide you shortly.",
@@ -297,9 +318,8 @@ const TRANSLATIONS = {
     status_progress: "In Progress",
     status_completed: "Completed",
     critical_alert: "Critical Issues",
-    start_service: "Start",
-    complete_service: "Done",
-    select_customer: "Select a customer"
+    select_customer: "Select a customer",
+    med_alert_label: "Health Check"
   }
 };
 
@@ -314,13 +334,9 @@ const BenjiHairApp = () => {
   const t = (key) => TRANSLATIONS[lang][key] || key;
 
   useEffect(() => {
-    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-      setConfigError(true);
-      return;
-    }
     const initAuth = async () => {
       try { await signInAnonymously(auth); } 
-      catch (error) { console.error("Auth Error:", error); alert("Auth Error"); }
+      catch (error) { console.error("Auth Error:", error); }
     };
     initAuth();
     if (auth) {
@@ -332,7 +348,7 @@ const BenjiHairApp = () => {
   if (configError) return <div className="min-h-screen flex items-center justify-center p-8 text-red-800 bg-red-50">{t('error_config')}</div>;
   if (!user) return <div className="flex items-center justify-center min-h-screen bg-[#f9f9f9] text-[#f5ae71]">{t('loading')}</div>;
 
-  // Language Switcher Component
+  // Language Switcher
   const LanguageSwitcher = () => (
     <div className="absolute top-6 left-6 z-50 flex gap-2">
       {['ja', 'ko', 'en'].map(l => (
@@ -395,7 +411,7 @@ const BenjiHairApp = () => {
   return (
     <>
       {mode === 'client' && <ClientView onBack={() => setMode('landing')} user={user} t={t} />}
-      {mode === 'admin' && <AdminDashboard onBack={() => setMode('landing')} user={user} t={t} />}
+      {mode === 'admin' && <AdminDashboard onBack={() => setMode('landing')} user={user} />}
     </>
   );
 };
@@ -473,13 +489,28 @@ const CheckboxCard = ({ checked, label, onClick }) => (
   </div>
 );
 
+// Updated DynamicInputs to handle product type and name
 const DynamicInputs = ({ items, type, placeholder1, placeholder2, onAdd, onRemove, onUpdate, btnText }) => (
   <div className="space-y-3">
     {items.map((item) => (
       <div key={item.id} className="flex gap-2 items-start animate-fade-in">
         <div className="grid grid-cols-2 gap-2 flex-1">
-          <input type="text" placeholder={placeholder1} value={item.name} onChange={(e) => onUpdate(type, item.id, 'name', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
-          <input type="text" placeholder={placeholder2} value={item.purpose} onChange={(e) => onUpdate(type, item.id, 'purpose', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
+          {/* Input 1: Category/Type */}
+          <input 
+            type="text" 
+            placeholder={placeholder1} 
+            value={item.category} 
+            onChange={(e) => onUpdate(type, item.id, 'category', e.target.value)} 
+            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" 
+          />
+          {/* Input 2: Name */}
+          <input 
+            type="text" 
+            placeholder={placeholder2} 
+            value={item.productName} 
+            onChange={(e) => onUpdate(type, item.id, 'productName', e.target.value)} 
+            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" 
+          />
         </div>
         <button onClick={() => onRemove(type, item.id)} className="p-3 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-50 rounded-xl"><Trash2 className="w-5 h-5" /></button>
       </div>
@@ -540,32 +571,82 @@ const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalTyp
   </div>
 );
 
-const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicField, updateDynamicField, t }) => (
-  <div className="animate-slide-up space-y-10">
-    <SectionTitle icon={Sparkles} title={t('step2_title')} subTitle={t('step2_desc')} />
-    <section className="bg-gradient-to-br from-[#c4d6c5]/20 to-[#f5ae71]/10 p-6 rounded-3xl border border-white shadow-sm">
-      <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-[#f5ae71] fill-current" />{t('q_massage')}</h3>
-      <div className="text-sm text-slate-600 mb-5 leading-relaxed bg-white/60 p-4 rounded-xl backdrop-blur-sm">{t('massage_desc_1')}<br/><span className="font-bold text-[#e08e50]">{t('massage_desc_2')}</span></div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{t('opt_massage').map((opt) => (<RadioCard key={opt.v} label={opt.l} value={opt.v} selected={formData.massageIntensity} onClick={(v) => updateField('massageIntensity', v)} />))}</div>
-    </section>
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-      <section>
-        <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Calendar className="w-4 h-4 text-[#c4d6c5]" /> {t('q_visit_freq')}</h3>
-        <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.visitFrequency} onChange={(e) => updateField('visitFrequency', e.target.value)}>{t('opt_visit').map(o=><option key={o} value={o}>{o}</option>)}</select>
+const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicField, updateDynamicField, toggleStylingPref, toggleMedDetail, t }) => {
+  const isMedOtherSelected = formData.medicationTypes.includes(t('opt_med_detail')[2]);
+
+  return (
+    <div className="animate-slide-up space-y-10">
+      <SectionTitle icon={Sparkles} title={t('step2_title')} subTitle={t('step2_desc')} />
+      
+      {/* 1. Massage */}
+      <section className="bg-gradient-to-br from-[#c4d6c5]/20 to-[#f5ae71]/10 p-6 rounded-3xl border border-white shadow-sm">
+        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-[#f5ae71] fill-current" />{t('q_massage')}</h3>
+        <div className="grid grid-cols-3 gap-2">{t('opt_massage').map((opt) => (<RadioCard key={opt.v} label={opt.l} value={opt.v} selected={formData.massageIntensity} onClick={(v) => updateField('massageIntensity', v)} />))}</div>
       </section>
-      <section>
-        <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Droplet className="w-4 h-4 text-[#c4d6c5]" /> {t('q_shampoo_freq')}</h3>
-        <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.shampooFrequency} onChange={(e) => updateField('shampooFrequency', e.target.value)}>{t('opt_shampoo').map(o=><option key={o} value={o}>{o}</option>)}</select>
-      </section>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <section>
+          <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Calendar className="w-4 h-4 text-[#c4d6c5]" /> {t('q_visit_freq')}</h3>
+          <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.visitFrequency} onChange={(e) => updateField('visitFrequency', e.target.value)}>{t('opt_visit').map(o=><option key={o} value={o}>{o}</option>)}</select>
+        </section>
+        <section>
+          <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Droplet className="w-4 h-4 text-[#c4d6c5]" /> {t('q_shampoo_freq')}</h3>
+          <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.shampooFrequency} onChange={(e) => updateField('shampooFrequency', e.target.value)}>{t('opt_shampoo').map(o=><option key={o} value={o}>{o}</option>)}</select>
+        </section>
+      </div>
+
+      {/* 2. Products - Updated props for new fields */}
+      <div className="space-y-6 border-t border-slate-100 pt-6">
+        <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_products')}</h3><DynamicInputs type="products" items={formData.products} placeholder1={t('ph_prod_type')} placeholder2={t('ph_prod_name')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
+        
+        {/* 3. Styling Preferences */}
+        <section>
+          <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_styling_pref')}</h3>
+          <div className="grid grid-cols-2 gap-2">
+            {t('opt_styling').map((opt) => (
+              <CheckboxCard key={opt} label={opt} checked={formData.stylingPreference.includes(opt)} onClick={() => toggleStylingPref(opt)} />
+            ))}
+          </div>
+        </section>
+
+        {/* 4. Safety Check (Medications) */}
+        <section className="bg-[#fffbf7] p-5 rounded-2xl border border-[#f5ae71]/20">
+          <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-[#f5ae71]" />
+            {t('q_med_check')}
+          </h3>
+          <div className="flex gap-2 mb-4">
+             <RadioCard label={t('q_med_check_yes')} value="yes" selected={formData.medicationCheck} onClick={(v) => updateField('medicationCheck', v)} />
+             <RadioCard label={t('q_med_check_no')} value="no" selected={formData.medicationCheck} onClick={(v) => updateField('medicationCheck', v)} />
+          </div>
+          
+          {formData.medicationCheck === 'yes' && (
+            <div className="animate-fade-in pl-1">
+               <p className="text-xs text-slate-500 mb-2 font-bold">{t('q_med_detail')}</p>
+               <div className="space-y-2">
+                 {t('opt_med_detail').map((opt) => (
+                   <CheckboxCard key={opt} label={opt} checked={formData.medicationTypes.includes(opt)} onClick={() => toggleMedDetail(opt)} />
+                 ))}
+               </div>
+               {isMedOtherSelected && (
+                 <div className="mt-3 animate-slide-up">
+                   <textarea 
+                     placeholder={t('ph_med_other')} 
+                     className="w-full px-4 py-3 border border-[#f5ae71]/30 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#f5ae71]/20 text-sm"
+                     value={formData.medicationOther}
+                     onChange={(e) => updateField('medicationOther', e.target.value)}
+                   />
+                 </div>
+               )}
+            </div>
+          )}
+        </section>
+      </div>
+
+      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_requests')}</h3><textarea className="w-full h-28 px-5 py-4 border border-slate-200 rounded-2xl resize-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 outline-none" value={formData.requests} onChange={(e) => updateField('requests', e.target.value)} /></section>
     </div>
-    <div className="space-y-6 border-t border-slate-100 pt-6">
-      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_products')}</h3><DynamicInputs type="products" items={formData.products} placeholder1={t('ph_prod_name')} placeholder2={t('ph_prod_purpose')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
-      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_tools')}</h3><DynamicInputs type="tools" items={formData.tools} placeholder1={t('ph_tool_name')} placeholder2={t('ph_tool_freq')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
-      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_meds')}</h3><DynamicInputs type="medications" items={formData.medications} placeholder1={t('ph_med_name')} placeholder2={t('ph_med_purpose')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
-    </div>
-    <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_requests')}</h3><textarea className="w-full h-28 px-5 py-4 border border-slate-200 rounded-2xl resize-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 outline-none" value={formData.requests} onChange={(e) => updateField('requests', e.target.value)} /></section>
-  </div>
-);
+  );
+};
 
 const Step3_Confirmation = ({ formData, t }) => {
   const getChemicalSummary = () => {
@@ -576,6 +657,13 @@ const Step3_Confirmation = ({ formData, t }) => {
   const getMassageLabel = (val) => {
     const opt = t('opt_massage').find(o => o.v === val);
     return opt ? opt.l : '-';
+  };
+  const getSafetySummary = () => {
+    if (formData.medicationCheck !== 'yes') return t('q_med_check_no');
+    let summary = `${t('q_med_check_yes')}`;
+    if (formData.medicationTypes.length > 0) summary += `\n(${formData.medicationTypes.join(', ')})`;
+    if (formData.medicationOther) summary += `\n- ${formData.medicationOther}`;
+    return summary;
   };
 
   return (
@@ -596,11 +684,19 @@ const Step3_Confirmation = ({ formData, t }) => {
         <SummaryItem label={t('q_visit_freq')} value={formData.visitFrequency} />
         <SummaryItem label={t('q_shampoo_freq')} value={formData.shampooFrequency} />
       </SummaryCard>
-      {(formData.products.length > 0 || formData.tools.length > 0 || formData.medications.length > 0) && (
+      <SummaryCard title={t('section_pref')}>
+         <SummaryItem label={t('q_styling_pref')} value={formData.stylingPreference} />
+         <div className="mt-2 pt-2 border-t border-slate-50">
+           <div className="flex justify-between items-start">
+             <span className="text-slate-400 font-medium">{t('med_alert_label')}</span>
+             <span className="font-bold text-slate-700 text-right max-w-[60%] break-keep whitespace-pre-line">{getSafetySummary()}</span>
+           </div>
+         </div>
+      </SummaryCard>
+
+      {(formData.products.length > 0) && (
         <SummaryCard title={t('section_items')}>
-          {formData.products.length > 0 && <div className="mb-2"><span className="text-slate-400 block text-xs mb-1">{t('q_products')}</span>{formData.products.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
-          {formData.tools.length > 0 && <div className="mb-2 mt-3"><span className="text-slate-400 block text-xs mb-1">{t('q_tools')}</span>{formData.tools.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
-          {formData.medications.length > 0 && <div className="mb-2 mt-3"><span className="text-slate-400 block text-xs mb-1">{t('q_meds')}</span>{formData.medications.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
+          {formData.products.length > 0 && <div className="mb-2"><span className="text-slate-400 block text-xs mb-1">{t('q_products')}</span>{formData.products.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">[{p.category}] {p.productName}</div>)}</div>}
         </SummaryCard>
       )}
       {formData.requests && <SummaryCard title={t('section_req')}><p className="whitespace-pre-wrap">{formData.requests}</p></SummaryCard>}
@@ -633,7 +729,10 @@ const ClientView = ({ onBack, user, t }) => {
     name: '', phone: '', privacyAgreed: false, 
     hairLength: '', scalpType: '', hairConditions: [],
     chemicalHistory: '', chemicalHistoryTime: '', chemicalHistoryTypes: [], 
-    massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], tools: [], medications: [], requests: ''
+    massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], 
+    requests: '',
+    stylingPreference: [], 
+    medicationCheck: '', medicationTypes: [], medicationOther: ''
   });
 
   const updateField = (field, value) => {
@@ -642,9 +741,13 @@ const ClientView = ({ onBack, user, t }) => {
   };
   const toggleCondition = (cond) => setFormData(prev => ({ ...prev, hairConditions: prev.hairConditions.includes(cond) ? prev.hairConditions.filter(c => c !== cond) : [...prev.hairConditions, cond] }));
   const toggleChemicalType = (type) => setFormData(prev => ({ ...prev, chemicalHistoryTypes: prev.chemicalHistoryTypes.includes(type) ? prev.chemicalHistoryTypes.filter(t => t !== type) : [...prev.chemicalHistoryTypes, type] }));
-  const addDynamicField = (type) => setFormData(prev => ({ ...prev, [type]: [...prev[type], { id: Date.now(), name: '', purpose: '' }] }));
+  // Update addDynamicField to initialize with category and productName
+  const addDynamicField = (type) => setFormData(prev => ({ ...prev, [type]: [...prev[type], { id: Date.now(), category: '', productName: '' }] }));
   const removeDynamicField = (type, id) => setFormData(prev => ({ ...prev, [type]: prev[type].filter(item => item.id !== id) }));
   const updateDynamicField = (type, id, field, value) => setFormData(prev => ({ ...prev, [type]: prev[type].map(item => item.id === id ? { ...item, [field]: value } : item) }));
+  
+  const toggleStylingPref = (opt) => setFormData(prev => ({ ...prev, stylingPreference: prev.stylingPreference.includes(opt) ? prev.stylingPreference.filter(o => o !== opt) : [...prev.stylingPreference, opt] }));
+  const toggleMedDetail = (opt) => setFormData(prev => ({ ...prev, medicationTypes: prev.medicationTypes.includes(opt) ? prev.medicationTypes.filter(o => o !== opt) : [...prev.medicationTypes, opt] }));
 
   const validatePhone = (phone) => /^[0-9]*$/.test(phone) && phone.length >= 9;
   const nextStep = () => {
@@ -688,12 +791,12 @@ const ClientView = ({ onBack, user, t }) => {
         <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {currentStep === 0 && <Step0_PersonalInfo formData={formData} updateField={updateField} phoneError={phoneError} t={t} />}
           {currentStep === 1 && <Step1_Basic formData={formData} updateField={updateField} toggleCondition={toggleCondition} toggleChemicalType={toggleChemicalType} t={t} />}
-          {currentStep === 2 && <Step2_Detailed formData={formData} updateField={updateField} addDynamicField={addDynamicField} removeDynamicField={removeDynamicField} updateDynamicField={updateDynamicField} t={t} />}
+          {currentStep === 2 && <Step2_Detailed formData={formData} updateField={updateField} addDynamicField={addDynamicField} removeDynamicField={removeDynamicField} updateDynamicField={updateDynamicField} toggleStylingPref={toggleStylingPref} toggleMedDetail={toggleMedDetail} t={t} />}
           {currentStep === 3 && <Step3_Confirmation formData={formData} t={t} />}
         </main>
         <footer className="p-6 border-t border-slate-100 bg-white sticky bottom-0 z-10 flex gap-3">
           {currentStep > 0 && <button onClick={prevStep} className="flex-1 py-4 border-2 border-slate-100 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-colors">{t('back')}</button>}
-          {currentStep === 2 && <button onClick={nextStep} className="flex-1 py-4 rounded-2xl border-2 border-[#c4d6c5] text-[#8da38e] font-bold hover:bg-[#f9fcf9] transition-colors flex items-center justify-center gap-1"><SkipForward className="w-4 h-4" /> {t('skip')}</button>}
+          {/* Skip button removed, only Next button */}
           {currentStep < 3 ? <button onClick={nextStep} className="flex-[2] py-4 bg-[#f5ae71] text-white rounded-2xl font-bold shadow-lg shadow-[#f5ae71]/30 hover:bg-[#e09e60] transition-all active:scale-[0.98]">{t('next')}</button> : <button onClick={handleSubmit} disabled={isSaving} className="flex-[2] py-4 bg-[#c4d6c5] text-white rounded-2xl font-bold shadow-lg shadow-[#c4d6c5]/30 hover:bg-[#b0c4b1] transition-all active:scale-[0.98]">{isSaving ? t('submitting') : t('submit')}</button>}
         </footer>
       </div>
@@ -704,9 +807,33 @@ const ClientView = ({ onBack, user, t }) => {
 // ==========================================
 // ADMIN DASHBOARD
 // ==========================================
-const AdminDashboard = ({ onBack, user, t }) => {
+const AdminDashboard = ({ onBack, user }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // New state for in-UI confirmation
+
+  // 🌍 FORCE JAPANESE FOR ADMIN
+  const tAdmin = (key) => TRANSLATIONS['ja'][key] || key;
+
+  // 🪄 AUTO-TRANSLATION MAGIC FUNCTION (Applied to all fields)
+  const getJapaneseValue = (key, value) => {
+    if (!value) return '';
+    if (Array.isArray(value)) return value.map(v => getJapaneseValue(key, v)).join(', ');
+
+    // Check YES/NO
+    if (['yes', '있음', 'あり', 'Yes'].includes(value)) return TRANSLATIONS['ja']['opt_yes'] || 'あり';
+    if (['no', '없음', 'なし', 'No'].includes(value)) return TRANSLATIONS['ja']['opt_no'] || 'なし';
+
+    // Check All Option Arrays (Translate value to Japanese index)
+    for (const lang of ['ja', 'ko', 'en']) {
+      const options = TRANSLATIONS[lang][key];
+      if (Array.isArray(options)) {
+        const idx = options.indexOf(value);
+        if (idx !== -1) return TRANSLATIONS['ja'][key][idx];
+      }
+    }
+    return value; // Fallback to original value if no match
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -719,6 +846,11 @@ const AdminDashboard = ({ onBack, user, t }) => {
     return () => unsubscribe();
   }, [user, selectedId]);
 
+  // Reset confirmation state when switching customers
+  useEffect(() => {
+    setShowDeleteConfirm(false);
+  }, [selectedId]);
+
   const updateStatus = async (newStatus) => {
     if (!selectedId) return;
     try {
@@ -727,33 +859,58 @@ const AdminDashboard = ({ onBack, user, t }) => {
     } catch (error) { console.error(error); alert("Failed"); }
   };
 
+  // 🛠️ FIXED DELETE FUNCTION (No window.confirm)
+  const performDelete = async () => {
+    if (!selectedId) return;
+    try {
+      await deleteDoc(doc(db, 'consultations', selectedId));
+      setShowDeleteConfirm(false);
+      setSelectedId(null); 
+    } catch (error) {
+      console.error("Delete failed", error);
+      alert(tAdmin('error_save') + "\n" + error.message);
+    }
+  };
+
   const selectedCustomer = customers.find(c => c.id === selectedId);
   const formatTime = (ts) => ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'}) : '';
 
   const getCriticalIssues = (customer) => {
     const issues = [];
-    if (['乾燥', '脂性', 'Dry', 'Oily'].includes(customer.scalpType)) issues.push(customer.scalpType + (t('name_label') === 'Name' ? '' : '頭皮'));
-    if (customer.hairConditions?.some(c => ['抜け毛', 'ダメージ', 'Hair Loss', 'Damage'].includes(c))) issues.push("Critical");
+    const scalp = getJapaneseValue('opt_scalp', customer.scalpType);
+    if (['乾燥', '脂性'].includes(scalp)) issues.push(scalp + '頭皮');
+    
+    // Check Hair Conditions (translated)
+    const conditions = customer.hairConditions || [];
+    if (conditions.some(c => {
+      const jaVal = getJapaneseValue('opt_concern', c);
+      return ['抜け毛', 'ダメージ'].includes(jaVal);
+    })) issues.push("Critical");
+
+    if (customer.medicationCheck === 'yes') issues.push("Med/Safety");
     return issues;
   };
 
-  const getMassageLabel = (val) => { const opt = t('opt_massage').find(o => o.v === val); return opt ? opt.l : '-'; };
+  const getMassageLabel = (val) => { 
+    const opt = TRANSLATIONS['ja']['opt_massage'].find(o => o.v === val); 
+    return opt ? opt.l : '-'; 
+  };
 
   return (
     <div className="min-h-screen bg-[#f5f7f5] flex flex-col h-screen overflow-hidden">
       <header className="bg-[#c4d6c5] border-b border-[#b0c4b1] h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="bg-white text-[#8da38e] px-2 py-1 text-xs font-bold rounded shadow-sm">ADMIN</div>
-          <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-sm">{t('admin_dashboard')}</h1>
+          <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-sm">{tAdmin('admin_dashboard')}</h1>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-sm text-white/80 font-medium">{new Date().toLocaleDateString('ja-JP')}</div>
-          <button onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors bg-white/10 px-3 py-1.5 rounded-full"><LogOut className="w-4 h-4" /> {t('back')}</button>
+          <button onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors bg-white/10 px-3 py-1.5 rounded-full"><LogOut className="w-4 h-4" /> {tAdmin('back')}</button>
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-80 bg-white border-r border-[#c4d6c5]/30 flex flex-col z-10">
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-[#f9fcf9]"><span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{t('waiting_list')} ({customers.length})</span></div>
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-[#f9fcf9]"><span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{tAdmin('waiting_list')} ({customers.length})</span></div>
           <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
             {customers.map(c => (
               <div key={c.id} onClick={() => setSelectedId(c.id)} className={`p-4 rounded-2xl cursor-pointer border transition-all duration-200 ${selectedId === c.id ? 'bg-[#f5ae71] text-white border-[#f5ae71] shadow-lg shadow-[#f5ae71]/30 transform scale-[1.02]' : 'bg-white text-slate-700 border-slate-100 hover:border-[#c4d6c5] hover:bg-[#f9fcf9]'}`}>
@@ -772,29 +929,60 @@ const AdminDashboard = ({ onBack, user, t }) => {
                   <div className="text-right flex flex-col items-end gap-2">
                     <div className="relative">
                       <select value={selectedCustomer.status || 'waiting'} onChange={(e) => updateStatus(e.target.value)} className="appearance-none bg-white border-2 border-[#c4d6c5] text-slate-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 shadow-sm cursor-pointer hover:bg-[#f9fcf9] transition-colors">
-                        <option value="waiting">{t('status_waiting')}</option><option value="in_progress">{t('status_progress')}</option><option value="completed">{t('status_completed')}</option>
+                        <option value="waiting">{tAdmin('status_waiting')}</option><option value="in_progress">{tAdmin('status_progress')}</option><option value="completed">{tAdmin('status_completed')}</option>
                       </select>
                       <ChevronDown className="w-4 h-4 text-[#8da38e] absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
                     </div>
+                    {/* 👇 [UI-Based Delete Confirmation] No window.confirm used */}
+                    {showDeleteConfirm ? (
+                      <div className="mt-2 flex flex-col items-end gap-1 animate-fade-in">
+                        <p className="text-[10px] text-red-500 font-bold mb-1">{tAdmin('delete_confirm_msg')}</p>
+                        <div className="flex gap-2">
+                          <button onClick={performDelete} className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-bold transition-colors">{tAdmin('delete_yes')}</button>
+                          <button onClick={() => setShowDeleteConfirm(false)} className="bg-slate-200 hover:bg-slate-300 text-slate-600 px-3 py-1 rounded text-xs font-bold transition-colors">{tAdmin('delete_no')}</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button onClick={() => setShowDeleteConfirm(true)} className="mt-2 text-xs text-red-400 hover:text-red-600 flex items-center gap-1 hover:bg-red-50 px-2 py-1 rounded transition-colors cursor-pointer"><Trash2 className="w-3 h-3" /> {tAdmin('delete')}</button>
+                    )}
                   </div>
                 </div>
-                {getCriticalIssues(selectedCustomer).length > 0 && (<div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm"><AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" /><div><h3 className="font-bold text-red-700 text-sm mb-1">{t('critical_alert')}</h3><div className="flex gap-2 flex-wrap">{getCriticalIssues(selectedCustomer).map((issue, idx) => (<span key={idx} className="bg-white border border-red-200 text-red-500 px-2 py-1 rounded text-xs font-bold shadow-sm">{issue}</span>))}</div></div></div>)}
+                {getCriticalIssues(selectedCustomer).length > 0 && (<div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm"><AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" /><div><h3 className="font-bold text-red-700 text-sm mb-1">{tAdmin('critical_alert')}</h3><div className="flex gap-2 flex-wrap">{getCriticalIssues(selectedCustomer).map((issue, idx) => (<span key={idx} className="bg-white border border-red-200 text-red-500 px-2 py-1 rounded text-xs font-bold shadow-sm">{issue}</span>))}</div></div></div>)}
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <DashboardCard title={t('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
-                  <DashboardRow label={t('q_hair_length')} value={selectedCustomer.hairLength} /><DashboardRow label={t('q_scalp')} value={selectedCustomer.scalpType} />
-                  <div className="mt-4 pt-4 border-t border-slate-50"><span className="text-xs font-bold text-[#f5ae71] block mb-1">{t('q_history')}</span>{selectedCustomer.chemicalHistory === 'yes' ? (<div className="bg-[#fff8f2] p-3 rounded-xl border border-[#f5ae71]/20"><div className="text-[#e08e50] font-bold text-sm mb-1">{selectedCustomer.chemicalHistoryTime}</div><div className="flex gap-1 flex-wrap">{selectedCustomer.chemicalHistoryTypes?.map(t => <span key={t} className="text-[10px] bg-white text-[#e08e50] px-2 py-0.5 rounded border border-[#f5ae71]/20">{t}</span>)}</div></div>) : <span className="text-slate-400 text-sm">{t('opt_no')}</span>}</div>
+                <DashboardCard title={tAdmin('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
+                  <DashboardRow label={tAdmin('q_hair_length')} value={getJapaneseValue('opt_length', selectedCustomer.hairLength)} />
+                  <DashboardRow label={tAdmin('q_scalp')} value={getJapaneseValue('opt_scalp', selectedCustomer.scalpType)} />
+                  <div className="mt-4 pt-4 border-t border-slate-50"><span className="text-xs font-bold text-[#f5ae71] block mb-1">{tAdmin('q_history')}</span>{selectedCustomer.chemicalHistory === 'yes' ? (<div className="bg-[#fff8f2] p-3 rounded-xl border border-[#f5ae71]/20"><div className="text-[#e08e50] font-bold text-sm mb-1">{getJapaneseValue('opt_time', selectedCustomer.chemicalHistoryTime)}</div><div className="flex gap-1 flex-wrap">{selectedCustomer.chemicalHistoryTypes?.map(t => <span key={t} className="text-[10px] bg-white text-[#e08e50] px-2 py-0.5 rounded border border-[#f5ae71]/20">{getJapaneseValue('opt_history_type', t)}</span>)}</div></div>) : <span className="text-slate-400 text-sm">{tAdmin('opt_no')}</span>}</div>
                 </DashboardCard>
-                <DashboardCard title={t('section_care')} icon={Star} className="border-t-4 border-t-[#f5ae71]">
-                  <div className="bg-[#fff8f2] p-3 rounded-xl mb-3 text-center border border-[#f5ae71]/10"><span className="text-xs text-[#e08e50] block mb-1">{t('q_massage')}</span><span className="text-xl font-bold text-slate-800">{getMassageLabel(selectedCustomer.massageIntensity)}</span></div><DashboardRow label={t('q_visit_freq')} value={selectedCustomer.visitFrequency} /><DashboardRow label={t('q_shampoo_freq')} value={selectedCustomer.shampooFrequency} />
+                <DashboardCard title={tAdmin('section_care')} icon={Star} className="border-t-4 border-t-[#f5ae71]">
+                  <div className="bg-[#fff8f2] p-3 rounded-xl mb-3 text-center border border-[#f5ae71]/10"><span className="text-xs text-[#e08e50] block mb-1">{tAdmin('q_massage')}</span><span className="text-xl font-bold text-slate-800">{getMassageLabel(selectedCustomer.massageIntensity)}</span></div>
+                  <DashboardRow label={tAdmin('q_visit_freq')} value={getJapaneseValue('opt_visit', selectedCustomer.visitFrequency)} />
+                  <DashboardRow label={tAdmin('q_shampoo_freq')} value={getJapaneseValue('opt_shampoo', selectedCustomer.shampooFrequency)} />
                 </DashboardCard>
-                <DashboardCard title={t('section_items')} icon={Droplet} className="border-t-4 border-t-[#c4d6c5]">
-                  <div className="space-y-3 text-sm"><div><span className="text-xs text-slate-400 block mb-1 font-bold">{t('q_products')}</span>{selectedCustomer.products?.length > 0 ? selectedCustomer.products.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">• {p.name}</div>) : <span className="text-slate-400">-</span>}</div><div><span className="text-xs text-slate-400 block mb-1 font-bold">{t('q_tools')}</span>{selectedCustomer.tools?.length > 0 ? selectedCustomer.tools.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">• {p.name}</div>) : <span className="text-slate-400">-</span>}</div></div>
+                <DashboardCard title={tAdmin('section_pref')} icon={CheckSquare} className="border-t-4 border-t-[#c4d6c5]">
+                   <div className="mb-4">
+                     <span className="text-xs text-slate-400 block mb-1 font-bold">{tAdmin('q_styling_pref')}</span>
+                     <div className="flex flex-wrap gap-1">{selectedCustomer.stylingPreference?.length > 0 ? selectedCustomer.stylingPreference.map(s => <span key={s} className="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">{getJapaneseValue('opt_styling', s)}</span>) : '-'}</div>
+                   </div>
+                   <div>
+                     <span className="text-xs text-slate-400 block mb-1 font-bold">{tAdmin('med_alert_label')}</span>
+                     <div className={`p-2 rounded ${selectedCustomer.medicationCheck === 'yes' ? 'bg-red-50 text-red-600 font-bold' : 'text-slate-600'}`}>
+                        {selectedCustomer.medicationCheck === 'yes' ? `⚠ ${tAdmin('q_med_check_yes')}` : tAdmin('q_med_check_no')}
+                     </div>
+                     {selectedCustomer.medicationTypes?.length > 0 && <div className="mt-1 text-xs text-slate-500 pl-2 border-l-2 border-red-200">{getJapaneseValue('opt_med_detail', selectedCustomer.medicationTypes)}</div>}
+                     {selectedCustomer.medicationOther && <div className="mt-1 text-xs text-slate-500 pl-2 border-l-2 border-red-200">- {selectedCustomer.medicationOther}</div>}
+                   </div>
                 </DashboardCard>
               </div>
-              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><div className="flex items-center gap-2 mb-2"><History className="w-4 h-4 text-slate-400" /><span className="font-bold text-slate-700 text-sm">{t('section_req')}</span></div><p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl">{selectedCustomer.requests || "-"}</p></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <DashboardCard title={tAdmin('section_items')} icon={Droplet}>
+                    <div className="space-y-3 text-sm"><div><span className="text-xs text-slate-400 block mb-1 font-bold">{tAdmin('q_products')}</span>{selectedCustomer.products?.length > 0 ? selectedCustomer.products.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">[{p.category}] {p.productName}</div>) : <span className="text-slate-400">-</span>}</div></div>
+                 </DashboardCard>
+                 <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><div className="flex items-center gap-2 mb-2"><History className="w-4 h-4 text-slate-400" /><span className="font-bold text-slate-700 text-sm">{tAdmin('section_req')}</span></div><p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl">{selectedCustomer.requests || "-"}</p></div>
+              </div>
             </div>
-          ) : <div className="h-full flex flex-col items-center justify-center text-slate-400"><User className="w-16 h-16 mb-4 opacity-10" /><p>{t('select_customer')}</p></div>}
+          ) : <div className="h-full flex flex-col items-center justify-center text-slate-400"><User className="w-16 h-16 mb-4 opacity-10" /><p>{tAdmin('select_customer')}</p></div>}
         </main>
       </div>
     </div>

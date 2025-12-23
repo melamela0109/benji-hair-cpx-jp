@@ -1,0 +1,1145 @@
+
+==================================================
+FILE_PATH: firebase.json
+==================================================
+
+{
+  "hosting": {
+    "public": "build",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
+
+
+==================================================
+FILE_PATH: package.json
+==================================================
+
+{
+  "name": "benji_cpx_jp",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^13.5.0",
+    "firebase": "^12.7.0",
+    "lucide-react": "^0.562.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "CI=false react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
+
+
+==================================================
+FILE_PATH: README.md
+==================================================
+
+# Getting Started with Create React App
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## Available Scripts
+
+In the project directory, you can run:
+
+### `npm start`
+
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+==================================================
+FILE_PATH: public\index.html
+==================================================
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="BENJI Hair - プレミアムヘアコンサルティング" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <title>BENJI HAIR</title>
+    
+    <!-- Tailwind CSS Script -->
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
+</html>
+
+==================================================
+FILE_PATH: public\manifest.json
+==================================================
+
+{
+  "short_name": "React App",
+  "name": "Create React App Sample",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
+
+
+==================================================
+FILE_PATH: src\App.css
+==================================================
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+==================================================
+FILE_PATH: src\App.js
+==================================================
+
+import React, { useState, useEffect } from 'react';
+import { 
+  ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
+  Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
+  AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe
+} from 'lucide-react';
+
+// --- Firebase Imports ---
+import { initializeApp } from 'firebase/app';
+import { 
+  getFirestore, collection, addDoc, query, orderBy, onSnapshot, 
+  serverTimestamp, limit, doc, updateDoc 
+} from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+
+// ==================================================================
+// 🔑 [設定] ユーザー様のBENJI HAIR SHOPキーが適用されています。
+// ==================================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyB0qWlZqE91mOxC6eL4l5MbDsvu11RsXtI",
+  authDomain: "benji-hair-shop.firebaseapp.com",
+  projectId: "benji-hair-shop",
+  storageBucket: "benji-hair-shop.firebasestorage.app",
+  messagingSenderId: "955809879686",
+  appId: "1:955809879686:web:2e4041cd2fb2b9d8dce307",
+  measurementId: "G-KDWG8W9YZX"
+};
+
+// Initialize Firebase
+let app, auth, db;
+try {
+  app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  db = getFirestore(app);
+} catch (error) {
+  console.error("Firebase Initialization Failed!", error);
+}
+
+// ==================================================================
+// 🌐 TRANSLATION DICTIONARY (다국어 사전)
+// ==================================================================
+const TRANSLATIONS = {
+  ja: {
+    // General
+    loading: "読み込み中...",
+    back: "戻る",
+    next: "次へ",
+    skip: "スキップ",
+    submit: "送信する",
+    submitting: "送信中...",
+    error_config: "設定エラー：App.jsのAPI Keyを確認してください。",
+    error_save: "保存に失敗しました。",
+    // Landing
+    landing_title: "BENJI",
+    landing_subtitle: "PREMIUM HAIR CONSULTING",
+    start_counseling: "カウンセリングを始める",
+    landing_desc: "より良いサービスのため\nカウンセリングシートにご記入ください",
+    admin_mode: "スタイリストモード",
+    // Admin Login
+    admin_login_title: "管理者ログイン",
+    password_placeholder: "パスワード",
+    login_btn: "ログイン",
+    cancel_btn: "キャンセル",
+    wrong_password: "パスワードが違います",
+    // Step 0
+    step0_title: "お客様情報の入力",
+    step0_desc: "スムーズなカウンセリングのため、基本情報を入力してください。",
+    name_label: "お名前",
+    name_placeholder: "山田 太郎",
+    phone_label: "電話番号",
+    phone_placeholder: "09012345678",
+    privacy_agree: "【必須】個人情報の収集および利用への同意",
+    privacy_desc: "ご入力いただいた情報は、カウンセリングおよび施術の目的でのみ使用されます。",
+    phone_error: "数字のみ入力してください。",
+    // Step 1
+    step1_title: "髪の状態チェック",
+    step1_desc: "現在の髪の状態を把握するための基本的な項目です。",
+    q_hair_length: "1. 髪の長さ",
+    opt_length: ["ショート", "ミディアム", "ロング", "その他"],
+    q_scalp: "2. 頭皮の状態",
+    opt_scalp: ["乾燥", "脂性", "普通", "その他"],
+    q_concern: "3. お悩み（複数選択可）",
+    opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
+    q_history: "4. 最近の施術履歴",
+    opt_yes: "あり",
+    opt_no: "なし",
+    q_history_type: "施術の種類（複数選択可）",
+    opt_history_type: ["パーマ", "カラー", "ブリーチ"],
+    q_last_time: "最後の施術時期",
+    opt_time: ["選択してください", "1ヶ月以内", "3ヶ月以内", "6ヶ月以上"],
+    // Step 2
+    step2_title: "詳細カウンセリング",
+    step2_desc: "より快適なサービスのため、任意で入力してください。",
+    q_massage: "シャンプー＆マッサージの力加減",
+    massage_desc_1: "ご希望に合わせて",
+    massage_desc_2: "より快適なシャンプー・頭皮ケアを提供いたします。",
+    opt_massage: [{v:'soft', l:'弱め'}, {v:'normal', l:'普通'}, {v:'strong', l:'強め'}, {v:'none', l:'おまかせ'}],
+    q_visit_freq: "美容室に行く頻度",
+    opt_visit: ["選択しない", "毎週", "2~4週間", "2~3ヶ月", "6ヶ月以上"],
+    q_shampoo_freq: "シャンプーの頻度",
+    opt_shampoo: ["選択しない", "毎日", "2日に1回", "週2回以下"],
+    q_products: "使用中のヘアケア製品",
+    ph_prod_name: "製品名",
+    ph_prod_purpose: "目的",
+    q_tools: "スタイリング道具",
+    ph_tool_name: "道具名（アイロン等）",
+    ph_tool_freq: "頻度",
+    q_meds: "服用中のお薬",
+    ph_med_name: "薬の名前",
+    ph_med_purpose: "目的",
+    add_item: "項目を追加",
+    q_requests: "その他ご要望",
+    // Step 3 (Confirm)
+    step3_title: "入力内容の確認",
+    section_basic: "基本情報",
+    section_status: "状態まとめ",
+    section_care: "ケアの好み・習慣",
+    section_items: "使用製品・道具",
+    section_req: "ご要望",
+    // Submitted
+    submitted_title: "受付が完了しました！",
+    submitted_desc: "担当スタイリストが確認後、\nご案内いたします。",
+    submitted_wait: "少々お待ちください。",
+    back_to_top: "トップに戻る",
+    // Admin
+    admin_dashboard: "BENJI HAIR DASHBOARD",
+    waiting_list: "待機リスト",
+    status_waiting: "カウンセリング待ち",
+    status_progress: "施術中",
+    status_completed: "施術完了",
+    critical_alert: "施術前の注意事項 (Critical)",
+    start_service: "施術開始",
+    complete_service: "完了",
+    select_customer: "お客様を選択してください"
+  },
+  ko: {
+    loading: "로딩 중...",
+    back: "이전",
+    next: "다음",
+    skip: "건너뛰기",
+    submit: "제출하기",
+    submitting: "전송 중...",
+    error_config: "설정 오류: App.js 상단의 API Key를 확인해주세요.",
+    error_save: "저장에 실패했습니다.",
+    landing_title: "BENJI",
+    landing_subtitle: "PREMIUM HAIR CONSULTING",
+    start_counseling: "상담 시작하기",
+    landing_desc: "더 나은 서비스를 위해\n상담지를 작성해주세요",
+    admin_mode: "디자이너 모드",
+    admin_login_title: "관리자 로그인",
+    password_placeholder: "비밀번호",
+    login_btn: "로그인",
+    cancel_btn: "취소",
+    wrong_password: "비밀번호가 틀렸습니다",
+    step0_title: "고객 정보 입력",
+    step0_desc: "원활한 상담을 위해 기본 정보를 입력해 주세요.",
+    name_label: "이름",
+    name_placeholder: "홍길동",
+    phone_label: "전화번호",
+    phone_placeholder: "01012345678",
+    privacy_agree: "【필수】 개인정보 수집 및 이용 동의",
+    privacy_desc: "입력해주신 정보는 상담 및 시술 목적으로만 사용됩니다.",
+    phone_error: "숫자만 입력해 주세요.",
+    step1_title: "모발 상태 체크",
+    step1_desc: "현재 모발 상태를 파악하기 위한 기본 항목입니다.",
+    q_hair_length: "1. 머리 길이",
+    opt_length: ["짧음", "중간", "긴머리", "기타"],
+    q_scalp: "2. 두피 상태",
+    opt_scalp: ["건성", "지성", "보통", "기타"],
+    q_concern: "3. 고민 사항 (중복 가능)",
+    opt_concern: ["탈모", "손상", "건조", "끊어짐/갈라짐", "비듬", "가려움", "없음"],
+    q_history: "4. 최근 시술 이력",
+    opt_yes: "있음",
+    opt_no: "없음",
+    q_history_type: "시술 종류 (중복 가능)",
+    opt_history_type: ["펌", "염색", "탈색"],
+    q_last_time: "마지막 시술 시기",
+    opt_time: ["선택해주세요", "1개월 이내", "3개월 이내", "6개월 이상"],
+    step2_title: "상세 상담",
+    step2_desc: "더 편안한 서비스를 위해 선택적으로 입력해 주세요.",
+    q_massage: "샴푸 & 두피 마사지 강도",
+    massage_desc_1: "말씀해주신 선호도에 맞춰",
+    massage_desc_2: "보다 편안한 샴푸 및 두피 케어를 제공해드립니다.",
+    opt_massage: [{v:'soft', l:'약하게'}, {v:'normal', l:'보통'}, {v:'strong', l:'강하게'}, {v:'none', l:'알아서'}],
+    q_visit_freq: "미용실 방문 주기",
+    opt_visit: ["선택 안 함", "매주", "2~4주", "2~3개월", "6개월 이상"],
+    q_shampoo_freq: "샴푸 빈도",
+    opt_shampoo: ["선택 안 함", "매일", "2일에 1회", "주 2회 이하"],
+    q_products: "사용 중인 제품",
+    ph_prod_name: "제품명",
+    ph_prod_purpose: "목적",
+    q_tools: "스타일링 도구",
+    ph_tool_name: "도구명 (고데기 등)",
+    ph_tool_freq: "빈도",
+    q_meds: "복용 중인 약물",
+    ph_med_name: "약 이름",
+    ph_med_purpose: "목적",
+    add_item: "항목 추가",
+    q_requests: "기타 요청사항",
+    step3_title: "작성 내용 확인",
+    section_basic: "기본 정보",
+    section_status: "상태 요약",
+    section_care: "케어 선호도",
+    section_items: "사용 제품/도구",
+    section_req: "요청사항",
+    submitted_title: "접수가 완료되었습니다!",
+    submitted_desc: "담당 디자이너가 곧 확인 후\n안내해 드리겠습니다.",
+    submitted_wait: "잠시만 대기해 주세요.",
+    back_to_top: "처음으로",
+    admin_dashboard: "BENJI HAIR DASHBOARD",
+    waiting_list: "대기 리스트",
+    status_waiting: "상담 대기중",
+    status_progress: "시술 중",
+    status_completed: "시술 완료",
+    critical_alert: "시술 전 주의사항 (Critical)",
+    start_service: "시술 시작",
+    complete_service: "완료",
+    select_customer: "고객을 선택해주세요"
+  },
+  en: {
+    loading: "Loading...",
+    back: "Back",
+    next: "Next",
+    skip: "Skip",
+    submit: "Submit",
+    submitting: "Submitting...",
+    error_config: "Config Error: Check API Key in App.js.",
+    error_save: "Failed to save.",
+    landing_title: "BENJI",
+    landing_subtitle: "PREMIUM HAIR CONSULTING",
+    start_counseling: "Start Counseling",
+    landing_desc: "Please fill out the form\nfor better service",
+    admin_mode: "Stylist Mode",
+    admin_login_title: "Admin Login",
+    password_placeholder: "Password",
+    login_btn: "Login",
+    cancel_btn: "Cancel",
+    wrong_password: "Wrong Password",
+    step0_title: "Guest Information",
+    step0_desc: "Please enter basic info for smooth counseling.",
+    name_label: "Name",
+    name_placeholder: "Your Name",
+    phone_label: "Phone Number",
+    phone_placeholder: "09012345678",
+    privacy_agree: "[Required] Privacy Policy Agreement",
+    privacy_desc: "Information is used only for counseling and service purposes.",
+    phone_error: "Numbers only.",
+    step1_title: "Hair Condition",
+    step1_desc: "Basic check for your current hair condition.",
+    q_hair_length: "1. Hair Length",
+    opt_length: ["Short", "Medium", "Long", "Other"],
+    q_scalp: "2. Scalp Type",
+    opt_scalp: ["Dry", "Oily", "Normal", "Other"],
+    q_concern: "3. Concerns (Multiple)",
+    opt_concern: ["Hair Loss", "Damage", "Dryness", "Split Ends", "Dandruff", "Itchiness", "None"],
+    q_history: "4. Recent History",
+    opt_yes: "Yes",
+    opt_no: "No",
+    q_history_type: "Treatment Type",
+    opt_history_type: ["Perm", "Color", "Bleach"],
+    q_last_time: "Last Treatment",
+    opt_time: ["Select", "Within 1 mo", "Within 3 mo", "Over 6 mo"],
+    step2_title: "Detailed Counseling",
+    step2_desc: "Optional details for better service.",
+    q_massage: "Massage Intensity",
+    massage_desc_1: "We provide comfortable care",
+    massage_desc_2: "based on your preference.",
+    opt_massage: [{v:'soft', l:'Soft'}, {v:'normal', l:'Normal'}, {v:'strong', l:'Strong'}, {v:'none', l:'Any'}],
+    q_visit_freq: "Visit Frequency",
+    opt_visit: ["None", "Weekly", "2-4 Weeks", "2-3 Months", "6+ Months"],
+    q_shampoo_freq: "Shampoo Frequency",
+    opt_shampoo: ["None", "Daily", "Every 2 days", "Twice a week"],
+    q_products: "Products Used",
+    ph_prod_name: "Product Name",
+    ph_prod_purpose: "Purpose",
+    q_tools: "Styling Tools",
+    ph_tool_name: "Tool Name",
+    ph_tool_freq: "Freq",
+    q_meds: "Medications",
+    ph_med_name: "Name",
+    ph_med_purpose: "Purpose",
+    add_item: "Add Item",
+    q_requests: "Other Requests",
+    step3_title: "Confirmation",
+    section_basic: "Basic Info",
+    section_status: "Hair Status",
+    section_care: "Preferences",
+    section_items: "Products/Tools",
+    section_req: "Requests",
+    submitted_title: "Submission Complete!",
+    submitted_desc: "Your stylist will check and\nguide you shortly.",
+    submitted_wait: "Please wait a moment.",
+    back_to_top: "Back to Top",
+    admin_dashboard: "BENJI HAIR DASHBOARD",
+    waiting_list: "Waiting List",
+    status_waiting: "Waiting",
+    status_progress: "In Progress",
+    status_completed: "Completed",
+    critical_alert: "Critical Issues",
+    start_service: "Start",
+    complete_service: "Done",
+    select_customer: "Select a customer"
+  }
+};
+
+// --- Main Application Component ---
+const BenjiHairApp = () => {
+  const [user, setUser] = useState(null);
+  const [mode, setMode] = useState('landing'); 
+  const [configError, setConfigError] = useState(false);
+  const [lang, setLang] = useState('ja'); // Default Language: Japanese
+
+  // Helper for Translation
+  const t = (key) => TRANSLATIONS[lang][key] || key;
+
+  useEffect(() => {
+    if (firebaseConfig.apiKey === "YOUR_API_KEY") {
+      setConfigError(true);
+      return;
+    }
+    const initAuth = async () => {
+      try { await signInAnonymously(auth); } 
+      catch (error) { console.error("Auth Error:", error); alert("Auth Error"); }
+    };
+    initAuth();
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, setUser);
+      return () => unsubscribe();
+    }
+  }, []);
+
+  if (configError) return <div className="min-h-screen flex items-center justify-center p-8 text-red-800 bg-red-50">{t('error_config')}</div>;
+  if (!user) return <div className="flex items-center justify-center min-h-screen bg-[#f9f9f9] text-[#f5ae71]">{t('loading')}</div>;
+
+  // Language Switcher Component
+  const LanguageSwitcher = () => (
+    <div className="absolute top-6 left-6 z-50 flex gap-2">
+      {['ja', 'ko', 'en'].map(l => (
+        <button 
+          key={l}
+          onClick={() => setLang(l)}
+          className={`px-3 py-1 rounded-full text-xs font-bold transition-colors ${lang === l ? 'bg-[#f5ae71] text-white' : 'bg-white/50 text-slate-500 hover:bg-white'}`}
+        >
+          {l.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+
+  // 🎨 [랜딩 페이지]
+  if (mode === 'landing') {
+    return (
+      <div className="min-h-screen bg-[#c4d6c5] flex flex-col relative overflow-hidden">
+        <LanguageSwitcher />
+        <div className="absolute top-[-10%] right-[-10%] w-64 h-64 bg-white/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-[-10%] left-[-10%] w-80 h-80 bg-[#f5ae71]/30 rounded-full blur-3xl"></div>
+
+        <div className="absolute top-6 right-6 z-50">
+          <button 
+            onClick={() => setMode('adminLogin')} 
+            className="text-white hover:text-[#f5ae71] flex items-center gap-2 text-sm transition-colors bg-white/10 hover:bg-white px-4 py-2 rounded-full border border-white/20 backdrop-blur-sm shadow-sm cursor-pointer"
+          >
+            <LayoutDashboard className="w-4 h-4" />
+            <span className="hidden sm:inline font-medium">{t('admin_mode')}</span>
+          </button>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center p-6 text-center z-10">
+          <div className="mb-12 animate-fade-in">
+            <h1 className="text-6xl font-bold text-white mb-4 tracking-tighter drop-shadow-sm">{t('landing_title')}</h1>
+            <p className="text-white/90 text-lg font-light tracking-widest">{t('landing_subtitle')}</p>
+          </div>
+          
+          <button 
+            onClick={() => setMode('client')}
+            className="group w-full max-w-sm p-10 rounded-[2.5rem] bg-white hover:bg-[#fffbf7] transition-all duration-500 flex flex-col items-center gap-6 shadow-2xl shadow-[#8da38e]/30 animate-slide-up transform hover:-translate-y-2 hover:scale-105 cursor-pointer"
+          >
+            <div className="w-24 h-24 rounded-full bg-[#fdf5ed] group-hover:bg-[#f5ae71] text-[#f5ae71] group-hover:text-white flex items-center justify-center transition-all duration-300 shadow-inner">
+              <User className="w-10 h-10" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-slate-800 mb-2 group-hover:text-[#f5ae71] transition-colors">{t('start_counseling')}</h3>
+              <p className="text-slate-400 font-light whitespace-pre-line">{t('landing_desc')}</p>
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (mode === 'adminLogin') {
+    return <AdminLogin onLogin={() => setMode('admin')} onBack={() => setMode('landing')} t={t} />;
+  }
+
+  return (
+    <>
+      {mode === 'client' && <ClientView onBack={() => setMode('landing')} user={user} t={t} />}
+      {mode === 'admin' && <AdminDashboard onBack={() => setMode('landing')} user={user} t={t} />}
+    </>
+  );
+};
+
+// 🛠️ [AdminLogin]
+const AdminLogin = ({ onLogin, onBack, t }) => {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (password === '1234') { 
+      onLogin();
+    } else {
+      setError(true);
+      setPassword('');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#c4d6c5] flex flex-col items-center justify-center p-6">
+      <div className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-xs animate-slide-up">
+        <div className="text-center mb-6">
+          <div className="w-16 h-16 bg-[#f5ae71]/10 text-[#f5ae71] rounded-full flex items-center justify-center mx-auto mb-4">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-800">{t('admin_login_title')}</h2>
+          <p className="text-slate-400 text-sm mt-1">{t('password_placeholder')}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <input 
+              type="password" 
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setError(false); }}
+              placeholder="Password" 
+              className={`w-full px-5 py-3 border-2 rounded-xl text-center text-lg tracking-widest focus:outline-none transition-all ${error ? 'border-red-300 bg-red-50 focus:border-red-500' : 'border-slate-200 focus:border-[#f5ae71]'}`}
+              autoFocus
+            />
+            {error && <p className="text-red-500 text-xs text-center mt-2 flex items-center justify-center gap-1"><AlertTriangle className="w-3 h-3"/> {t('wrong_password')}</p>}
+          </div>
+          <button type="submit" className="w-full py-3 bg-[#f5ae71] text-white rounded-xl font-bold shadow-lg shadow-[#f5ae71]/30 hover:bg-[#e09e60] transition-all active:scale-[0.98]">{t('login_btn')}</button>
+        </form>
+        <button onClick={onBack} className="w-full mt-4 text-slate-400 text-sm hover:text-slate-600 transition-colors">{t('cancel_btn')}</button>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// SHARED UI COMPONENTS
+// ==========================================
+const SectionTitle = ({ icon: Icon, title, subTitle }) => (
+  <div className="mb-6">
+    <div className="flex items-center gap-2 mb-2">
+      {Icon && <Icon className="w-6 h-6 text-[#f5ae71]" />}
+      <h2 className="text-xl font-bold text-slate-800">{title}</h2>
+    </div>
+    {subTitle && <p className="text-sm text-slate-500 whitespace-pre-line leading-relaxed border-l-4 border-[#c4d6c5] pl-3 py-1 bg-[#f9fcf9] rounded-r-lg">{subTitle}</p>}
+  </div>
+);
+
+const RadioCard = ({ selected, value, label, onClick, subLabel }) => (
+  <div onClick={() => onClick(value)} className={`cursor-pointer rounded-2xl border p-4 transition-all duration-300 flex flex-col justify-center items-center text-center gap-1 shadow-sm ${selected === value ? 'border-[#f5ae71] bg-[#fff8f2] text-[#e08e50] ring-1 ring-[#f5ae71] shadow-md transform scale-[1.02]' : 'border-slate-100 hover:border-[#c4d6c5] bg-white text-slate-500 hover:bg-[#f9fcf9]'}`}>
+    <span className="font-bold text-sm">{label}</span>
+    {subLabel && <span className="text-xs opacity-75">{subLabel}</span>}
+  </div>
+);
+
+const CheckboxCard = ({ checked, label, onClick }) => (
+  <div onClick={onClick} className={`cursor-pointer rounded-2xl border p-4 flex items-center gap-3 transition-all duration-300 shadow-sm ${checked ? 'border-[#f5ae71] bg-[#fff8f2] text-[#e08e50] shadow-md' : 'border-slate-100 hover:border-[#c4d6c5] bg-white text-slate-500 hover:bg-[#f9fcf9]'}`}>
+    <div className={`w-5 h-5 rounded-full border flex items-center justify-center transition-colors ${checked ? 'bg-[#f5ae71] border-[#f5ae71]' : 'border-slate-300 bg-white'}`}>{checked && <Check className="w-3 h-3 text-white" />}</div>
+    <span className="font-bold text-sm">{label}</span>
+  </div>
+);
+
+const DynamicInputs = ({ items, type, placeholder1, placeholder2, onAdd, onRemove, onUpdate, btnText }) => (
+  <div className="space-y-3">
+    {items.map((item) => (
+      <div key={item.id} className="flex gap-2 items-start animate-fade-in">
+        <div className="grid grid-cols-2 gap-2 flex-1">
+          <input type="text" placeholder={placeholder1} value={item.name} onChange={(e) => onUpdate(type, item.id, 'name', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
+          <input type="text" placeholder={placeholder2} value={item.purpose} onChange={(e) => onUpdate(type, item.id, 'purpose', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
+        </div>
+        <button onClick={() => onRemove(type, item.id)} className="p-3 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-50 rounded-xl"><Trash2 className="w-5 h-5" /></button>
+      </div>
+    ))}
+    <button onClick={() => onAdd(type)} className="w-full py-3 border border-dashed border-[#c4d6c5] rounded-xl text-[#8da38e] flex items-center justify-center gap-2 hover:bg-[#f9fcf9] hover:border-[#8da38e] transition-colors text-sm font-medium"><Plus className="w-4 h-4" /> {btnText}</button>
+  </div>
+);
+
+// --- STEPS ---
+const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
+  <div className="animate-slide-up">
+    <SectionTitle icon={User} title={t('step0_title')} subTitle={t('step0_desc')} />
+    <div className="space-y-6">
+      <div><label className="block text-sm font-bold text-slate-700 mb-2 pl-1">{t('name_label')}</label><input type="text" value={formData.name} onChange={(e) => updateField('name', e.target.value)} placeholder={t('name_placeholder')} className="w-full px-5 py-4 border border-slate-200 rounded-2xl focus:outline-none focus:border-[#f5ae71] focus:ring-4 focus:ring-[#f5ae71]/10 transition-all bg-white" /></div>
+      <div>
+        <label className="block text-sm font-bold text-slate-700 mb-2 pl-1">{t('phone_label')}</label>
+        <input type="tel" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} placeholder={t('phone_placeholder')} className={`w-full px-5 py-4 border rounded-2xl focus:outline-none focus:ring-4 transition-all bg-white ${phoneError ? 'border-red-300 focus:ring-red-100' : 'border-slate-200 focus:border-[#f5ae71] focus:ring-[#f5ae71]/10'}`} />
+        {phoneError && <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1 animate-fade-in"><AlertTriangle className="w-3 h-3" /> {t('phone_error')}</p>}
+      </div>
+      <div className="pt-6 border-t border-slate-100">
+        <label className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl hover:bg-[#f9fcf9] transition-colors border border-transparent hover:border-[#c4d6c5]/30">
+          <div className={`mt-0.5 w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-colors ${formData.privacyAgreed ? 'bg-[#c4d6c5]' : 'bg-slate-200'}`}><Check className="w-3 h-3 text-white" /></div>
+          <input type="checkbox" className="hidden" checked={formData.privacyAgreed} onChange={(e) => updateField('privacyAgreed', e.target.checked)} />
+          <div className="text-sm text-slate-500 leading-relaxed"><span className="font-bold text-slate-700">{t('privacy_agree')}</span><br/>{t('privacy_desc')}</div>
+        </label>
+      </div>
+    </div>
+  </div>
+);
+
+const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalType, t }) => (
+  <div className="animate-slide-up space-y-8">
+    <div><SectionTitle icon={Scissors} title={t('step1_title')} /><div className="bg-[#f9fcf9] p-5 rounded-2xl border border-[#c4d6c5]/30 mb-6 text-sm text-slate-600 leading-relaxed">{t('step1_desc')}</div></div>
+    <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_hair_length')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_length').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.hairLength} onClick={(v) => updateField('hairLength', v)} />))}</div></section>
+    <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_scalp')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_scalp').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.scalpType} onClick={(v) => updateField('scalpType', v)} />))}</div></section>
+    <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_concern')}</h3><div className="grid grid-cols-2 gap-2">{t('opt_concern').map((opt) => (<CheckboxCard key={opt} label={opt} checked={formData.hairConditions.includes(opt)} onClick={() => toggleCondition(opt)} />))}</div></section>
+    <section>
+      <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_history')}</h3>
+      <div className="flex gap-2 mb-3">
+        <RadioCard label={t('opt_yes')} value="yes" selected={formData.chemicalHistory} onClick={(v) => updateField('chemicalHistory', v)} />
+        <RadioCard label={t('opt_no')} value="no" selected={formData.chemicalHistory} onClick={(v) => updateField('chemicalHistory', v)} />
+      </div>
+      {formData.chemicalHistory === 'yes' && (
+        <div className="bg-[#fff8f2] p-5 rounded-2xl border border-[#f5ae71]/30 animate-fade-in space-y-5">
+          <div>
+            <label className="block text-xs font-bold text-[#e08e50] mb-2 pl-1">{t('q_history_type')}</label>
+            <div className="grid grid-cols-3 gap-2">{t('opt_history_type').map((type) => (<CheckboxCard key={type} label={type} checked={formData.chemicalHistoryTypes.includes(type)} onClick={() => toggleChemicalType(type)} />))}</div>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-[#e08e50] mb-2 pl-1">{t('q_last_time')}</label>
+            <select className="w-full px-4 py-3 rounded-xl border border-[#f5ae71]/30 bg-white focus:outline-none focus:ring-2 focus:ring-[#f5ae71]/20" value={formData.chemicalHistoryTime} onChange={(e) => updateField('chemicalHistoryTime', e.target.value)}>
+              {t('opt_time').map(o => <option key={o} value={o}>{o}</option>)}
+            </select>
+          </div>
+        </div>
+      )}
+    </section>
+  </div>
+);
+
+const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicField, updateDynamicField, t }) => (
+  <div className="animate-slide-up space-y-10">
+    <SectionTitle icon={Sparkles} title={t('step2_title')} subTitle={t('step2_desc')} />
+    <section className="bg-gradient-to-br from-[#c4d6c5]/20 to-[#f5ae71]/10 p-6 rounded-3xl border border-white shadow-sm">
+      <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-[#f5ae71] fill-current" />{t('q_massage')}</h3>
+      <div className="text-sm text-slate-600 mb-5 leading-relaxed bg-white/60 p-4 rounded-xl backdrop-blur-sm">{t('massage_desc_1')}<br/><span className="font-bold text-[#e08e50]">{t('massage_desc_2')}</span></div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{t('opt_massage').map((opt) => (<RadioCard key={opt.v} label={opt.l} value={opt.v} selected={formData.massageIntensity} onClick={(v) => updateField('massageIntensity', v)} />))}</div>
+    </section>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      <section>
+        <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Calendar className="w-4 h-4 text-[#c4d6c5]" /> {t('q_visit_freq')}</h3>
+        <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.visitFrequency} onChange={(e) => updateField('visitFrequency', e.target.value)}>{t('opt_visit').map(o=><option key={o} value={o}>{o}</option>)}</select>
+      </section>
+      <section>
+        <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Droplet className="w-4 h-4 text-[#c4d6c5]" /> {t('q_shampoo_freq')}</h3>
+        <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.shampooFrequency} onChange={(e) => updateField('shampooFrequency', e.target.value)}>{t('opt_shampoo').map(o=><option key={o} value={o}>{o}</option>)}</select>
+      </section>
+    </div>
+    <div className="space-y-6 border-t border-slate-100 pt-6">
+      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_products')}</h3><DynamicInputs type="products" items={formData.products} placeholder1={t('ph_prod_name')} placeholder2={t('ph_prod_purpose')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
+      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_tools')}</h3><DynamicInputs type="tools" items={formData.tools} placeholder1={t('ph_tool_name')} placeholder2={t('ph_tool_freq')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
+      <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_meds')}</h3><DynamicInputs type="medications" items={formData.medications} placeholder1={t('ph_med_name')} placeholder2={t('ph_med_purpose')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
+    </div>
+    <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_requests')}</h3><textarea className="w-full h-28 px-5 py-4 border border-slate-200 rounded-2xl resize-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 outline-none" value={formData.requests} onChange={(e) => updateField('requests', e.target.value)} /></section>
+  </div>
+);
+
+const Step3_Confirmation = ({ formData, t }) => {
+  const getChemicalSummary = () => {
+    if (formData.chemicalHistory !== 'yes') return t('opt_no');
+    const types = formData.chemicalHistoryTypes.length > 0 ? `(${formData.chemicalHistoryTypes.join(', ')})` : '';
+    return `${formData.chemicalHistoryTime} ${types}`;
+  };
+  const getMassageLabel = (val) => {
+    const opt = t('opt_massage').find(o => o.v === val);
+    return opt ? opt.l : '-';
+  };
+
+  return (
+    <div className="animate-slide-up pb-20">
+      <div className="text-center mb-10">
+        <div className="w-20 h-20 bg-[#c4d6c5]/20 text-[#8da38e] rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-in"><CheckCircle2 className="w-10 h-10" /></div>
+        <h2 className="text-2xl font-bold text-slate-800">{t('step3_title')}</h2>
+      </div>
+      <SummaryCard title={t('section_basic')}><SummaryItem label={t('name_label')} value={formData.name} /><SummaryItem label={t('phone_label')} value={formData.phone} /></SummaryCard>
+      <SummaryCard title={t('section_status')}>
+        <SummaryItem label={t('q_hair_length')} value={formData.hairLength} />
+        <SummaryItem label={t('q_scalp')} value={formData.scalpType} />
+        <SummaryItem label={t('q_concern')} value={formData.hairConditions} />
+        <SummaryItem label={t('q_history')} value={getChemicalSummary()} />
+      </SummaryCard>
+      <SummaryCard title={t('section_care')}>
+        <SummaryItem label={t('q_massage')} value={getMassageLabel(formData.massageIntensity)} />
+        <SummaryItem label={t('q_visit_freq')} value={formData.visitFrequency} />
+        <SummaryItem label={t('q_shampoo_freq')} value={formData.shampooFrequency} />
+      </SummaryCard>
+      {(formData.products.length > 0 || formData.tools.length > 0 || formData.medications.length > 0) && (
+        <SummaryCard title={t('section_items')}>
+          {formData.products.length > 0 && <div className="mb-2"><span className="text-slate-400 block text-xs mb-1">{t('q_products')}</span>{formData.products.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
+          {formData.tools.length > 0 && <div className="mb-2 mt-3"><span className="text-slate-400 block text-xs mb-1">{t('q_tools')}</span>{formData.tools.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
+          {formData.medications.length > 0 && <div className="mb-2 mt-3"><span className="text-slate-400 block text-xs mb-1">{t('q_meds')}</span>{formData.medications.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">{p.name} <span className="text-slate-400 text-xs">({p.purpose})</span></div>)}</div>}
+        </SummaryCard>
+      )}
+      {formData.requests && <SummaryCard title={t('section_req')}><p className="whitespace-pre-wrap">{formData.requests}</p></SummaryCard>}
+    </div>
+  );
+};
+
+const SubmittedScreen = ({ onBack, t }) => (
+  <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6 animate-fade-in">
+    <div className="w-24 h-24 bg-[#f5ae71] text-white rounded-full flex items-center justify-center mb-8 shadow-xl shadow-[#f5ae71]/30 animate-pulse-slow"><Sparkles className="w-12 h-12" /></div>
+    <h2 className="text-3xl font-bold text-slate-800 mb-3">{t('submitted_title')}</h2>
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 max-w-sm w-full mb-8">
+      <p className="text-slate-600 leading-relaxed font-medium whitespace-pre-line">{t('submitted_desc')}</p>
+      <p className="text-xs text-slate-400 mt-4">{t('submitted_wait')}</p>
+    </div>
+    <button onClick={onBack} className="px-8 py-4 bg-slate-100 text-slate-600 rounded-xl font-bold hover:bg-slate-200 transition-colors w-full max-w-xs">{t('back_to_top')}</button>
+  </div>
+);
+
+// ==========================================
+// CLIENT VIEW
+// ==========================================
+const ClientView = ({ onBack, user, t }) => {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [phoneError, setPhoneError] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: '', phone: '', privacyAgreed: false, 
+    hairLength: '', scalpType: '', hairConditions: [],
+    chemicalHistory: '', chemicalHistoryTime: '', chemicalHistoryTypes: [], 
+    massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], tools: [], medications: [], requests: ''
+  });
+
+  const updateField = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+    if (field === 'phone') setPhoneError(false);
+  };
+  const toggleCondition = (cond) => setFormData(prev => ({ ...prev, hairConditions: prev.hairConditions.includes(cond) ? prev.hairConditions.filter(c => c !== cond) : [...prev.hairConditions, cond] }));
+  const toggleChemicalType = (type) => setFormData(prev => ({ ...prev, chemicalHistoryTypes: prev.chemicalHistoryTypes.includes(type) ? prev.chemicalHistoryTypes.filter(t => t !== type) : [...prev.chemicalHistoryTypes, type] }));
+  const addDynamicField = (type) => setFormData(prev => ({ ...prev, [type]: [...prev[type], { id: Date.now(), name: '', purpose: '' }] }));
+  const removeDynamicField = (type, id) => setFormData(prev => ({ ...prev, [type]: prev[type].filter(item => item.id !== id) }));
+  const updateDynamicField = (type, id, field, value) => setFormData(prev => ({ ...prev, [type]: prev[type].map(item => item.id === id ? { ...item, [field]: value } : item) }));
+
+  const validatePhone = (phone) => /^[0-9]*$/.test(phone) && phone.length >= 9;
+  const nextStep = () => {
+    if (currentStep === 0 && (!validatePhone(formData.phone) || !formData.name || !formData.privacyAgreed)) {
+      if (!validatePhone(formData.phone)) setPhoneError(true);
+      return;
+    }
+    setCurrentStep(prev => Math.min(prev + 1, 3));
+  };
+  const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0));
+  const handleHeaderBack = () => { if (currentStep > 0) prevStep(); else onBack(); };
+
+  const handleSubmit = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
+      await Promise.race([
+        addDoc(collection(db, 'consultations'), {
+          ...formData,
+          createdAt: serverTimestamp(),
+          status: 'waiting',
+          userId: user.uid
+        }),
+        timeoutPromise
+      ]);
+      setIsSubmitted(true);
+    } catch (error) { console.error("Error:", error); alert(t('error_save')); } finally { setIsSaving(false); }
+  };
+
+  if (isSubmitted) return <SubmittedScreen onBack={onBack} t={t} />;
+
+  return (
+    <div className="min-h-screen bg-[#f0f4f0] font-sans text-slate-800 flex justify-center py-6 sm:py-10">
+      <div className="w-full max-w-lg bg-white sm:rounded-[2rem] shadow-xl shadow-slate-200/50 flex flex-col relative overflow-hidden h-[95vh] sm:h-auto sm:min-h-[800px]">
+        <header className="sticky top-0 z-10 bg-white/90 backdrop-blur-md border-b border-slate-100 px-6 py-5 flex items-center justify-between">
+          <button onClick={handleHeaderBack} className="p-2 -ml-2 rounded-full hover:bg-slate-50 transition-colors"><ChevronLeft className="w-6 h-6 text-slate-400"/></button>
+          <div className="text-xs font-bold text-[#f5ae71] bg-[#fff8f2] px-3 py-1 rounded-full tracking-wider">STEP {currentStep + 1} / 4</div>
+        </header>
+        <div className="w-full h-1.5 bg-slate-100"><div className="h-full bg-[#f5ae71] transition-all duration-500 ease-out rounded-r-full" style={{ width: `${((currentStep + 1) / 4) * 100}%` }} /></div>
+        <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
+          {currentStep === 0 && <Step0_PersonalInfo formData={formData} updateField={updateField} phoneError={phoneError} t={t} />}
+          {currentStep === 1 && <Step1_Basic formData={formData} updateField={updateField} toggleCondition={toggleCondition} toggleChemicalType={toggleChemicalType} t={t} />}
+          {currentStep === 2 && <Step2_Detailed formData={formData} updateField={updateField} addDynamicField={addDynamicField} removeDynamicField={removeDynamicField} updateDynamicField={updateDynamicField} t={t} />}
+          {currentStep === 3 && <Step3_Confirmation formData={formData} t={t} />}
+        </main>
+        <footer className="p-6 border-t border-slate-100 bg-white sticky bottom-0 z-10 flex gap-3">
+          {currentStep > 0 && <button onClick={prevStep} className="flex-1 py-4 border-2 border-slate-100 rounded-2xl font-bold text-slate-500 hover:bg-slate-50 transition-colors">{t('back')}</button>}
+          {currentStep === 2 && <button onClick={nextStep} className="flex-1 py-4 rounded-2xl border-2 border-[#c4d6c5] text-[#8da38e] font-bold hover:bg-[#f9fcf9] transition-colors flex items-center justify-center gap-1"><SkipForward className="w-4 h-4" /> {t('skip')}</button>}
+          {currentStep < 3 ? <button onClick={nextStep} className="flex-[2] py-4 bg-[#f5ae71] text-white rounded-2xl font-bold shadow-lg shadow-[#f5ae71]/30 hover:bg-[#e09e60] transition-all active:scale-[0.98]">{t('next')}</button> : <button onClick={handleSubmit} disabled={isSaving} className="flex-[2] py-4 bg-[#c4d6c5] text-white rounded-2xl font-bold shadow-lg shadow-[#c4d6c5]/30 hover:bg-[#b0c4b1] transition-all active:scale-[0.98]">{isSaving ? t('submitting') : t('submit')}</button>}
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
+// ADMIN DASHBOARD
+// ==========================================
+const AdminDashboard = ({ onBack, user, t }) => {
+  const [customers, setCustomers] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'consultations'), orderBy('createdAt', 'desc'), limit(50));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCustomers(data);
+      if (!selectedId && data.length > 0) setSelectedId(data[0].id);
+    });
+    return () => unsubscribe();
+  }, [user, selectedId]);
+
+  const updateStatus = async (newStatus) => {
+    if (!selectedId) return;
+    try {
+      const docRef = doc(db, 'consultations', selectedId);
+      await updateDoc(docRef, { status: newStatus });
+    } catch (error) { console.error(error); alert("Failed"); }
+  };
+
+  const selectedCustomer = customers.find(c => c.id === selectedId);
+  const formatTime = (ts) => ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'}) : '';
+
+  const getCriticalIssues = (customer) => {
+    const issues = [];
+    if (['乾燥', '脂性', 'Dry', 'Oily'].includes(customer.scalpType)) issues.push(customer.scalpType + (t('name_label') === 'Name' ? '' : '頭皮'));
+    if (customer.hairConditions?.some(c => ['抜け毛', 'ダメージ', 'Hair Loss', 'Damage'].includes(c))) issues.push("Critical");
+    return issues;
+  };
+
+  const getMassageLabel = (val) => { const opt = t('opt_massage').find(o => o.v === val); return opt ? opt.l : '-'; };
+
+  return (
+    <div className="min-h-screen bg-[#f5f7f5] flex flex-col h-screen overflow-hidden">
+      <header className="bg-[#c4d6c5] border-b border-[#b0c4b1] h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="bg-white text-[#8da38e] px-2 py-1 text-xs font-bold rounded shadow-sm">ADMIN</div>
+          <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-sm">{t('admin_dashboard')}</h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="text-sm text-white/80 font-medium">{new Date().toLocaleDateString('ja-JP')}</div>
+          <button onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors bg-white/10 px-3 py-1.5 rounded-full"><LogOut className="w-4 h-4" /> {t('back')}</button>
+        </div>
+      </header>
+      <div className="flex flex-1 overflow-hidden">
+        <aside className="w-80 bg-white border-r border-[#c4d6c5]/30 flex flex-col z-10">
+          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-[#f9fcf9]"><span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{t('waiting_list')} ({customers.length})</span></div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
+            {customers.map(c => (
+              <div key={c.id} onClick={() => setSelectedId(c.id)} className={`p-4 rounded-2xl cursor-pointer border transition-all duration-200 ${selectedId === c.id ? 'bg-[#f5ae71] text-white border-[#f5ae71] shadow-lg shadow-[#f5ae71]/30 transform scale-[1.02]' : 'bg-white text-slate-700 border-slate-100 hover:border-[#c4d6c5] hover:bg-[#f9fcf9]'}`}>
+                <div className="flex justify-between items-start mb-2"><span className="font-bold text-lg">{c.name}</span><div className="flex flex-col items-end gap-1"><span className={`text-xs px-2 py-1 rounded-full ${selectedId === c.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>{formatTime(c.createdAt)}</span><div className="scale-75 origin-right">{c.status === 'in_progress' && <span className={`w-2 h-2 rounded-full inline-block ${selectedId === c.id ? 'bg-white animate-pulse' : 'bg-[#f5ae71]'}`}></span>}{c.status === 'completed' && <Check className="w-3 h-3 inline-block" />}</div></div></div>
+                <div className={`text-xs flex items-center gap-1 ${selectedId === c.id ? 'text-white/80' : 'text-slate-400'}`}><Phone className="w-3 h-3" /> {c.phone}</div>
+              </div>
+            ))}
+          </div>
+        </aside>
+        <main className="flex-1 bg-[#f5f7f5] p-6 overflow-y-auto">
+          {selectedCustomer ? (
+            <div className="max-w-5xl mx-auto space-y-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-between items-end">
+                  <div><h2 className="text-3xl font-bold text-slate-800">{selectedCustomer.name}</h2><p className="text-slate-500 text-sm mt-1">{selectedCustomer.phone}</p></div>
+                  <div className="text-right flex flex-col items-end gap-2">
+                    <div className="relative">
+                      <select value={selectedCustomer.status || 'waiting'} onChange={(e) => updateStatus(e.target.value)} className="appearance-none bg-white border-2 border-[#c4d6c5] text-slate-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 shadow-sm cursor-pointer hover:bg-[#f9fcf9] transition-colors">
+                        <option value="waiting">{t('status_waiting')}</option><option value="in_progress">{t('status_progress')}</option><option value="completed">{t('status_completed')}</option>
+                      </select>
+                      <ChevronDown className="w-4 h-4 text-[#8da38e] absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  </div>
+                </div>
+                {getCriticalIssues(selectedCustomer).length > 0 && (<div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm"><AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" /><div><h3 className="font-bold text-red-700 text-sm mb-1">{t('critical_alert')}</h3><div className="flex gap-2 flex-wrap">{getCriticalIssues(selectedCustomer).map((issue, idx) => (<span key={idx} className="bg-white border border-red-200 text-red-500 px-2 py-1 rounded text-xs font-bold shadow-sm">{issue}</span>))}</div></div></div>)}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <DashboardCard title={t('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
+                  <DashboardRow label={t('q_hair_length')} value={selectedCustomer.hairLength} /><DashboardRow label={t('q_scalp')} value={selectedCustomer.scalpType} />
+                  <div className="mt-4 pt-4 border-t border-slate-50"><span className="text-xs font-bold text-[#f5ae71] block mb-1">{t('q_history')}</span>{selectedCustomer.chemicalHistory === 'yes' ? (<div className="bg-[#fff8f2] p-3 rounded-xl border border-[#f5ae71]/20"><div className="text-[#e08e50] font-bold text-sm mb-1">{selectedCustomer.chemicalHistoryTime}</div><div className="flex gap-1 flex-wrap">{selectedCustomer.chemicalHistoryTypes?.map(t => <span key={t} className="text-[10px] bg-white text-[#e08e50] px-2 py-0.5 rounded border border-[#f5ae71]/20">{t}</span>)}</div></div>) : <span className="text-slate-400 text-sm">{t('opt_no')}</span>}</div>
+                </DashboardCard>
+                <DashboardCard title={t('section_care')} icon={Star} className="border-t-4 border-t-[#f5ae71]">
+                  <div className="bg-[#fff8f2] p-3 rounded-xl mb-3 text-center border border-[#f5ae71]/10"><span className="text-xs text-[#e08e50] block mb-1">{t('q_massage')}</span><span className="text-xl font-bold text-slate-800">{getMassageLabel(selectedCustomer.massageIntensity)}</span></div><DashboardRow label={t('q_visit_freq')} value={selectedCustomer.visitFrequency} /><DashboardRow label={t('q_shampoo_freq')} value={selectedCustomer.shampooFrequency} />
+                </DashboardCard>
+                <DashboardCard title={t('section_items')} icon={Droplet} className="border-t-4 border-t-[#c4d6c5]">
+                  <div className="space-y-3 text-sm"><div><span className="text-xs text-slate-400 block mb-1 font-bold">{t('q_products')}</span>{selectedCustomer.products?.length > 0 ? selectedCustomer.products.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">• {p.name}</div>) : <span className="text-slate-400">-</span>}</div><div><span className="text-xs text-slate-400 block mb-1 font-bold">{t('q_tools')}</span>{selectedCustomer.tools?.length > 0 ? selectedCustomer.tools.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">• {p.name}</div>) : <span className="text-slate-400">-</span>}</div></div>
+                </DashboardCard>
+              </div>
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><div className="flex items-center gap-2 mb-2"><History className="w-4 h-4 text-slate-400" /><span className="font-bold text-slate-700 text-sm">{t('section_req')}</span></div><p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl">{selectedCustomer.requests || "-"}</p></div>
+            </div>
+          ) : <div className="h-full flex flex-col items-center justify-center text-slate-400"><User className="w-16 h-16 mb-4 opacity-10" /><p>{t('select_customer')}</p></div>}
+        </main>
+      </div>
+    </div>
+  );
+};
+
+// Helpers
+const SummaryCard = ({ title, children }) => (<div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mb-4 hover:shadow-md transition-shadow"><h3 className="text-xs font-bold text-[#8da38e] uppercase mb-4 pb-2 border-b border-slate-50">{title}</h3><div className="space-y-3 text-sm">{children}</div></div>);
+const SummaryItem = ({ label, value }) => value && value.length > 0 ? (<div className="flex justify-between items-start"><span className="text-slate-400 font-medium">{label}</span><span className="font-bold text-slate-700 text-right max-w-[60%] break-keep">{Array.isArray(value) ? value.join(', ') : value}</span></div>) : null;
+const DashboardCard = ({ title, icon: Icon, children, className = '' }) => (<div className={`bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col ${className}`}><div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-50"><Icon className="w-5 h-5 text-slate-400"/><h3 className="font-bold text-slate-700">{title}</h3></div><div className="flex-1">{children}</div></div>);
+const DashboardRow = ({ label, value }) => (<div className="flex justify-between py-2 border-b border-slate-50 last:border-0"><span className="text-sm text-slate-500">{label}</span><span className="font-medium text-slate-800">{value || '-'}</span></div>);
+
+export default BenjiHairApp;
+
+==================================================
+FILE_PATH: src\App.test.js
+==================================================
+
+import { render, screen } from '@testing-library/react';
+import App from './App';
+
+test('renders learn react link', () => {
+  render(<App />);
+  const linkElement = screen.getByText(/learn react/i);
+  expect(linkElement).toBeInTheDocument();
+});
+
+
+==================================================
+FILE_PATH: src\index.css
+==================================================
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+==================================================
+FILE_PATH: src\index.js
+==================================================
+
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+import reportWebVitals from './reportWebVitals';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+
+
+==================================================
+FILE_PATH: src\reportWebVitals.js
+==================================================
+
+const reportWebVitals = onPerfEntry => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+      getCLS(onPerfEntry);
+      getFID(onPerfEntry);
+      getFCP(onPerfEntry);
+      getLCP(onPerfEntry);
+      getTTFB(onPerfEntry);
+    });
+  }
+};
+
+export default reportWebVitals;
+
+
+==================================================
+FILE_PATH: src\setupTests.js
+==================================================
+
+// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// allows you to do things like:
+// expect(element).toHaveTextContent(/react/i)
+// learn more: https://github.com/testing-library/jest-dom
+import '@testing-library/jest-dom';
+
