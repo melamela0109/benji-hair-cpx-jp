@@ -11,9 +11,35 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
+      # 👇 [중요] React 빌드를 위한 단계 추가
+      - run: npm ci
+      - run: npm run build
+
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_BENJI_HAIR_SHOP }}
           channelId: live
           projectId: benji-hair-shop
+```
+
+### ✨ 무엇이 바뀌었나요?
+중간에 `npm ci`와 `npm run build`라는 명령어를 추가했습니다.
+* **`npm ci`**: 프로젝트에 필요한 라이브러리들을 설치합니다.
+* **`npm run build`**: React 코드를 실제 웹사이트용 파일로 변환(공사)합니다.
+
+---
+
+### 💡 마지막 체크 포인트 (중요!)
+
+이 파일을 저장하고 GitHub에 올리기(`push`) 전에, 아까 말씀드린 **`package.json` 수정**도 되어 있는지 꼭 확인해주세요.
+
+**`package.json` 파일의 `scripts` 부분:**
+```json
+"scripts": {
+  "start": "react-scripts start",
+  "build": "CI=false react-scripts build",  <-- 여기에 CI=false가 있어야 안전합니다!
+  "test": "react-scripts test",
+  "eject": "react-scripts eject"
+},
