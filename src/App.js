@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle
+  XCircle, AlertCircle, Pill, PanelLeft // PanelLeft 사용 (왼쪽 사이드바 제어용)
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -797,7 +797,8 @@ const ClientView = ({ onBack, user, t }) => {
 const AdminDashboard = ({ onBack, user }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // New state for in-UI confirmation
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // NEW: Sidebar toggle state
 
   // 🌍 FORCE JAPANESE FOR ADMIN
   const tAdmin = (key) => TRANSLATIONS['ja'][key] || key;
@@ -860,21 +861,67 @@ const AdminDashboard = ({ onBack, user }) => {
   };
 
   const selectedCustomer = customers.find(c => c.id === selectedId);
-  const formatTime = (ts) => ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleTimeString('ja-JP', {hour:'2-digit', minute:'2-digit'}) : '';
+  const formatTime = (ts) => ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleDateString('ja-JP', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
 
+  // 🧠 [Modified] Smart Critical Issues Logic
   const getCriticalIssues = (customer) => {
     const issues = [];
     const scalp = getJapaneseValue('opt_scalp', customer.scalpType);
-    if (['乾燥', '脂性'].includes(scalp)) issues.push(scalp + '頭皮');
     
-    // Check Hair Conditions (translated)
+    // 🟡 Scalp Alerts
+    if (scalp === '乾燥') {
+      issues.push({
+        type: 'scalp_dry',
+        label: '🟡 乾燥頭皮',
+        message: '頭皮が乾燥しているため、摩擦やシャンプーの強さに注意してください。',
+        bgColor: 'bg-yellow-50',
+        borderColor: 'border-yellow-200',
+        textColor: 'text-yellow-700',
+        icon: Droplet
+      });
+    } else if (scalp === '脂性') {
+      issues.push({
+        type: 'scalp_oily',
+        label: '🟡 脂性頭皮',
+        message: '皮脂分泌が多いため、製品選びと洗浄バランスに注意してください。',
+        bgColor: 'bg-yellow-50',
+        borderColor: 'border-yellow-200',
+        textColor: 'text-yellow-700',
+        icon: Droplet
+      });
+    }
+
+    // 🔴 Critical Alerts
     const conditions = customer.hairConditions || [];
-    if (conditions.some(c => {
+    const hasCritical = conditions.some(c => {
       const jaVal = getJapaneseValue('opt_concern', c);
       return ['抜け毛', 'ダメージ'].includes(jaVal);
-    })) issues.push("Critical");
+    });
+    
+    if (hasCritical) {
+      issues.push({
+        type: 'critical',
+        label: '🔴 Critical',
+        message: '脱毛・損傷の履歴があるため、刺激および施術強度の調整が必要です。',
+        bgColor: 'bg-red-50',
+        borderColor: 'border-red-200',
+        textColor: 'text-red-700',
+        icon: AlertTriangle
+      });
+    }
 
-    if (customer.medicationCheck === 'yes') issues.push("Med/Safety");
+    // 🔵 Med/Safety Alerts
+    if (customer.medicationCheck === 'yes') {
+      issues.push({
+        type: 'med',
+        label: '🔵 Med / Safety',
+        message: '服薬中のため、施術可能範囲の確認が必要です。',
+        bgColor: 'bg-blue-50',
+        borderColor: 'border-blue-200',
+        textColor: 'text-blue-700',
+        icon: Pill
+      });
+    }
     return issues;
   };
 
@@ -887,7 +934,19 @@ const AdminDashboard = ({ onBack, user }) => {
     // 💡 [Modified] Forced minimum width to simulate Desktop View on Mobile
     <div className="min-h-screen bg-[#f5f7f5] flex flex-col h-screen overflow-hidden min-w-[1200px] overflow-x-auto">
       <header className="bg-[#c4d6c5] border-b border-[#b0c4b1] h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+          
+          {/* 👇 [Toggle Button] Show only when sidebar is CLOSED (Moved to Left of ADMIN badge) */}
+          {!isSidebarOpen && (
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="p-1 rounded-full hover:bg-white/20 transition-colors text-white"
+              title="Open Sidebar"
+            >
+              <PanelLeft className="w-6 h-6" />
+            </button>
+          )}
+
           <div className="bg-white text-[#8da38e] px-2 py-1 text-xs font-bold rounded shadow-sm">ADMIN</div>
           <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-sm">{tAdmin('admin_dashboard')}</h1>
         </div>
@@ -897,8 +956,20 @@ const AdminDashboard = ({ onBack, user }) => {
         </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-80 bg-white border-r border-[#c4d6c5]/30 flex flex-col z-10">
-          <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-[#f9fcf9]"><span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{tAdmin('waiting_list')} ({customers.length})</span></div>
+        <aside className={`${isSidebarOpen ? 'w-80 border-r' : 'w-0 border-none'} bg-white border-[#c4d6c5]/30 flex flex-col z-10 transition-all duration-300 ease-in-out overflow-hidden`}>
+          
+          {/* 👇 Sidebar Header with Close Button */}
+          <div className="p-4 border-b border-slate-100 flex items-center gap-3 bg-[#f9fcf9] shrink-0">
+            <button 
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+              title="Close Sidebar"
+            >
+              <PanelLeft className="w-5 h-5" />
+            </button>
+            <span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{tAdmin('waiting_list')} ({customers.length})</span>
+          </div>
+
           <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
             {customers.map(c => (
               <div key={c.id} onClick={() => setSelectedId(c.id)} className={`p-4 rounded-2xl cursor-pointer border transition-all duration-200 ${selectedId === c.id ? 'bg-[#f5ae71] text-white border-[#f5ae71] shadow-lg shadow-[#f5ae71]/30 transform scale-[1.02]' : 'bg-white text-slate-700 border-slate-100 hover:border-[#c4d6c5] hover:bg-[#f9fcf9]'}`}>
@@ -908,7 +979,7 @@ const AdminDashboard = ({ onBack, user }) => {
             ))}
           </div>
         </aside>
-        <main className="flex-1 bg-[#f5f7f5] p-6 overflow-y-auto">
+        <main className="flex-1 bg-[#f5f7f5] p-6 overflow-y-auto transition-all duration-300">
           {selectedCustomer ? (
             <div className="max-w-5xl mx-auto space-y-6">
               <div className="flex flex-col gap-4">
@@ -935,8 +1006,27 @@ const AdminDashboard = ({ onBack, user }) => {
                     )}
                   </div>
                 </div>
-                {getCriticalIssues(selectedCustomer).length > 0 && (<div className="bg-red-50 border border-red-100 p-4 rounded-2xl flex items-start gap-3 shadow-sm"><AlertTriangle className="w-5 h-5 text-red-500 mt-0.5" /><div><h3 className="font-bold text-red-700 text-sm mb-1">{tAdmin('critical_alert')}</h3><div className="flex gap-2 flex-wrap">{getCriticalIssues(selectedCustomer).map((issue, idx) => (<span key={idx} className="bg-white border border-red-200 text-red-500 px-2 py-1 rounded text-xs font-bold shadow-sm">{issue}</span>))}</div></div></div>)}
+                
+                {/* 🚨 Smart Coaching Alerts Area */}
+                {(() => {
+                  const issues = getCriticalIssues(selectedCustomer);
+                  if (issues.length === 0) return null;
+                  return (
+                    <div className="grid grid-cols-1 gap-3 animate-fade-in">
+                      {issues.map((issue, idx) => (
+                        <div key={idx} className={`${issue.bgColor} border ${issue.borderColor} p-4 rounded-2xl flex items-start gap-3 shadow-sm`}>
+                          <issue.icon className={`w-5 h-5 ${issue.textColor} mt-0.5`} />
+                          <div>
+                            <h3 className={`font-bold ${issue.textColor} text-sm mb-1`}>{issue.label}</h3>
+                            <p className={`text-xs ${issue.textColor} opacity-90 font-medium`}>{issue.message}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <DashboardCard title={tAdmin('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
                   <DashboardRow label={tAdmin('q_hair_length')} value={getJapaneseValue('opt_length', selectedCustomer.hairLength)} />
