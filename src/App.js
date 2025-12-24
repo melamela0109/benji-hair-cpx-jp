@@ -1,3 +1,4 @@
+//수정버전 2025-12-24 8:46pm
 import React, { useState, useEffect } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
