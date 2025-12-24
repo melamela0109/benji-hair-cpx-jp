@@ -50,6 +50,7 @@ const TRANSLATIONS = {
     submit: "送信する",
     submitting: "送信中...",
     delete: "削除",
+    delete_confirm: "本当にこの顧客情報を削除しますか？\nこの操作は取り消せません。",
     delete_confirm_msg: "本当に削除しますか？",
     delete_yes: "はい、削除",
     delete_no: "キャンセル",
@@ -149,6 +150,7 @@ const TRANSLATIONS = {
     submit: "제출하기",
     submitting: "전송 중...",
     delete: "삭제",
+    delete_confirm: "정말 이 고객 정보를 삭제하시겠습니까?\n삭제 후에는 복구할 수 없습니다.",
     delete_confirm_msg: "정말 삭제하시겠습니까?",
     delete_yes: "네, 삭제",
     delete_no: "취소",
@@ -239,6 +241,7 @@ const TRANSLATIONS = {
     submit: "Submit",
     submitting: "Submitting...",
     delete: "Delete",
+    delete_confirm: "Are you sure you want to delete this customer?\nThis cannot be undone.",
     delete_confirm_msg: "Are you sure?",
     delete_yes: "Yes",
     delete_no: "No",
@@ -489,28 +492,13 @@ const CheckboxCard = ({ checked, label, onClick }) => (
   </div>
 );
 
-// Updated DynamicInputs to handle product type and name
 const DynamicInputs = ({ items, type, placeholder1, placeholder2, onAdd, onRemove, onUpdate, btnText }) => (
   <div className="space-y-3">
     {items.map((item) => (
       <div key={item.id} className="flex gap-2 items-start animate-fade-in">
         <div className="grid grid-cols-2 gap-2 flex-1">
-          {/* Input 1: Category/Type */}
-          <input 
-            type="text" 
-            placeholder={placeholder1} 
-            value={item.category} 
-            onChange={(e) => onUpdate(type, item.id, 'category', e.target.value)} 
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" 
-          />
-          {/* Input 2: Name */}
-          <input 
-            type="text" 
-            placeholder={placeholder2} 
-            value={item.productName} 
-            onChange={(e) => onUpdate(type, item.id, 'productName', e.target.value)} 
-            className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" 
-          />
+          <input type="text" placeholder={placeholder1} value={item.category} onChange={(e) => onUpdate(type, item.id, 'category', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
+          <input type="text" placeholder={placeholder2} value={item.productName} onChange={(e) => onUpdate(type, item.id, 'productName', e.target.value)} className="w-full px-4 py-3 border border-slate-200 rounded-xl focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 text-sm bg-white" />
         </div>
         <button onClick={() => onRemove(type, item.id)} className="p-3 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-50 rounded-xl"><Trash2 className="w-5 h-5" /></button>
       </div>
@@ -595,7 +583,7 @@ const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicF
         </section>
       </div>
 
-      {/* 2. Products - Updated props for new fields */}
+      {/* 2. Products */}
       <div className="space-y-6 border-t border-slate-100 pt-6">
         <section><h3 className="text-sm font-bold text-slate-800 mb-2 pl-1">{t('q_products')}</h3><DynamicInputs type="products" items={formData.products} placeholder1={t('ph_prod_type')} placeholder2={t('ph_prod_name')} onAdd={addDynamicField} onRemove={removeDynamicField} onUpdate={updateDynamicField} btnText={t('add_item')} /></section>
         
@@ -741,7 +729,6 @@ const ClientView = ({ onBack, user, t }) => {
   };
   const toggleCondition = (cond) => setFormData(prev => ({ ...prev, hairConditions: prev.hairConditions.includes(cond) ? prev.hairConditions.filter(c => c !== cond) : [...prev.hairConditions, cond] }));
   const toggleChemicalType = (type) => setFormData(prev => ({ ...prev, chemicalHistoryTypes: prev.chemicalHistoryTypes.includes(type) ? prev.chemicalHistoryTypes.filter(t => t !== type) : [...prev.chemicalHistoryTypes, type] }));
-  // Update addDynamicField to initialize with category and productName
   const addDynamicField = (type) => setFormData(prev => ({ ...prev, [type]: [...prev[type], { id: Date.now(), category: '', productName: '' }] }));
   const removeDynamicField = (type, id) => setFormData(prev => ({ ...prev, [type]: prev[type].filter(item => item.id !== id) }));
   const updateDynamicField = (type, id, field, value) => setFormData(prev => ({ ...prev, [type]: prev[type].map(item => item.id === id ? { ...item, [field]: value } : item) }));
@@ -897,7 +884,8 @@ const AdminDashboard = ({ onBack, user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f7f5] flex flex-col h-screen overflow-hidden">
+    // 💡 [Modified] Forced minimum width to simulate Desktop View on Mobile
+    <div className="min-h-screen bg-[#f5f7f5] flex flex-col h-screen overflow-hidden min-w-[1200px] overflow-x-auto">
       <header className="bg-[#c4d6c5] border-b border-[#b0c4b1] h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
         <div className="flex items-center gap-2">
           <div className="bg-white text-[#8da38e] px-2 py-1 text-xs font-bold rounded shadow-sm">ADMIN</div>
