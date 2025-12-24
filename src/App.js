@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle, AlertCircle, Pill, PanelLeft // PanelLeft 사용 (왼쪽 사이드바 제어용)
+  XCircle, AlertCircle, Pill, PanelLeft // PanelLeft 사용
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -936,7 +936,7 @@ const AdminDashboard = ({ onBack, user }) => {
       <header className="bg-[#c4d6c5] border-b border-[#b0c4b1] h-16 flex items-center justify-between px-6 shrink-0 z-20 shadow-sm">
         <div className="flex items-center gap-4">
           
-          {/* 👇 [Toggle Button] Show only when sidebar is CLOSED (Moved to Left of ADMIN badge) */}
+          {/* 👇 [Toggle Button] Show only when sidebar is CLOSED (Correct Order: Button -> Admin Badge -> Title) */}
           {!isSidebarOpen && (
             <button 
               onClick={() => setIsSidebarOpen(true)}
