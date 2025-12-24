@@ -1,17 +1,16 @@
-//수정버전 2025-12-24 8:46pm
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle, AlertCircle, Pill, PanelLeft // PanelLeft 사용
+  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart, Users, TrendingUp 
 } from 'lucide-react';
 
 // --- Firebase Imports ---
 import { initializeApp } from 'firebase/app';
 import { 
   getFirestore, collection, addDoc, query, orderBy, onSnapshot, 
-  serverTimestamp, limit, doc, updateDoc, deleteDoc 
+  serverTimestamp, limit, doc, updateDoc, deleteDoc, where, getDocs 
 } from 'firebase/firestore';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
@@ -57,6 +56,13 @@ const TRANSLATIONS = {
     delete_no: "キャンセル",
     delete_success: "削除しました。",
     error_save: "処理に失敗しました。権限を確認してください。",
+    search_placeholder: "電話番号検索 (下4桁)",
+    no_results: "検索結果がありません",
+    // Visit Status
+    visit_new: "新規",
+    visit_regular: "リピーター",
+    visit_count_suffix: "回目",
+    visit_history_label: "来店履歴",
     // Landing
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
@@ -113,6 +119,9 @@ const TRANSLATIONS = {
     // Step 2 New Items
     q_styling_pref: "仕上げスタイリングの好み",
     opt_styling: ["ナチュラル", "ボリューム重視", "しっかり固定", "軽め"],
+    // 🆕 Service Mood
+    q_service_mood: "ご希望の過ごし方",
+    opt_service_mood: ["なるべく静かに過ごしたい", "髪の悩みやケア方法を知りたい", "楽しく話したい"],
     q_med_check: "現在、施術に影響する可能性のあるお薬を服用中ですか？",
     q_med_check_yes: "はい（要相談）",
     q_med_check_no: "いいえ",
@@ -141,7 +150,22 @@ const TRANSLATIONS = {
     status_completed: "施術完了",
     critical_alert: "施術前の注意事項 (Critical)",
     select_customer: "お客様を選択してください",
-    med_alert_label: "服薬/健康状態"
+    med_alert_label: "服薬/健康状態",
+    designer_memo: "デザイナーメモ",
+    memo_placeholder: "施術内容や特記事項を入力...",
+    save_memo: "保存",
+    memo_saved: "保存完了",
+    // Stats
+    tab_queue: "受付リスト",
+    tab_stats: "統計",
+    stats_total_visits: "総来店数",
+    stats_retention_rate: "リピート率",
+    stats_new_ratio: "新規比率",
+    stats_concerns_rank: "悩みランキング (TOP 5)",
+    stats_scalp_dist: "頭皮タイプ分布",
+    stats_mood_pref: "希望する雰囲気",
+    stats_massage_pref: "マッサージ強度",
+    stats_count: "件"
   },
   ko: {
     loading: "로딩 중...",
@@ -157,6 +181,13 @@ const TRANSLATIONS = {
     delete_no: "취소",
     delete_success: "삭제되었습니다.",
     error_save: "저장/삭제 중 오류가 발생했습니다.",
+    search_placeholder: "전화번호 검색 (뒷번호)",
+    no_results: "검색 결과가 없습니다",
+    // Visit Status
+    visit_new: "신규",
+    visit_regular: "단골",
+    visit_count_suffix: "회차",
+    visit_history_label: "방문 이력",
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
     start_counseling: "상담 시작하기",
@@ -207,6 +238,9 @@ const TRANSLATIONS = {
     add_item: "항목 추가",
     q_styling_pref: "마무리 스타일링 선호",
     opt_styling: ["자연스럽게", "볼륨 강조", "고정력 있게", "가볍게"],
+    // 🆕 Service Mood
+    q_service_mood: "희망하는 시술 분위기",
+    opt_service_mood: ["조용히 쉬고 싶어요", "시술/관리 설명이 필요해요", "즐겁게 대화하고 싶어요"],
     q_med_check: "현재 미용 시술에 영향을 줄 수 있는 약물을 복용 중이신가요?",
     q_med_check_yes: "있음 (시술 전 상담 필요)",
     q_med_check_no: "없음",
@@ -232,7 +266,22 @@ const TRANSLATIONS = {
     status_completed: "시술 완료",
     critical_alert: "시술 전 주의사항 (Critical)",
     select_customer: "고객을 선택해주세요",
-    med_alert_label: "약물/안전 체크"
+    med_alert_label: "약물/안전 체크",
+    designer_memo: "디자이너 메모",
+    memo_placeholder: "시술 내용이나 특이사항을 입력하세요...",
+    save_memo: "저장",
+    memo_saved: "저장 완료",
+    // Stats
+    tab_queue: "대기 리스트",
+    tab_stats: "통계",
+    stats_total_visits: "총 방문 수",
+    stats_retention_rate: "재방문율",
+    stats_new_ratio: "신규 비율",
+    stats_concerns_rank: "고민 랭킹 (TOP 5)",
+    stats_scalp_dist: "두피 타입 분포",
+    stats_mood_pref: "선호하는 분위기",
+    stats_massage_pref: "마사지 강도 선호",
+    stats_count: "건"
   },
   en: {
     loading: "Loading...",
@@ -248,6 +297,13 @@ const TRANSLATIONS = {
     delete_no: "No",
     delete_success: "Deleted successfully.",
     error_save: "Error saving/deleting data.",
+    search_placeholder: "Search Phone (Last 4)",
+    no_results: "No results found",
+    // Visit Status
+    visit_new: "New",
+    visit_regular: "Regular",
+    visit_count_suffix: " visit",
+    visit_history_label: "Visit History",
     landing_title: "BENJI",
     landing_subtitle: "PREMIUM HAIR CONSULTING",
     start_counseling: "Start Counseling",
@@ -298,6 +354,9 @@ const TRANSLATIONS = {
     add_item: "Add Item",
     q_styling_pref: "Styling Preference",
     opt_styling: ["Natural", "Volume", "Strong Hold", "Light"],
+    // 🆕 Service Mood - Removed Magazine/Tablet
+    q_service_mood: "Service Preference",
+    opt_service_mood: ["Quietly", "Explain treatment", "Chatting"],
     q_med_check: "Are you taking medication that affects treatment?",
     q_med_check_yes: "Yes (Need consult)",
     q_med_check_no: "No",
@@ -323,7 +382,21 @@ const TRANSLATIONS = {
     status_completed: "Completed",
     critical_alert: "Critical Issues",
     select_customer: "Select a customer",
-    med_alert_label: "Health Check"
+    med_alert_label: "Health Check",
+    designer_memo: "Designer Memo",
+    memo_placeholder: "Enter details...",
+    save_memo: "Save",
+    memo_saved: "Saved",
+    tab_queue: "Queue",
+    tab_stats: "Stats",
+    stats_total_visits: "Total Visits",
+    stats_retention_rate: "Retention",
+    stats_new_ratio: "New Ratio",
+    stats_concerns_rank: "Top Concerns",
+    stats_scalp_dist: "Scalp Type",
+    stats_mood_pref: "Service Mood",
+    stats_massage_pref: "Massage Pref",
+    stats_count: ""
   }
 };
 
@@ -560,7 +633,7 @@ const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalTyp
   </div>
 );
 
-const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicField, updateDynamicField, toggleStylingPref, toggleMedDetail, t }) => {
+const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicField, updateDynamicField, toggleStylingPref, toggleMedDetail, toggleServiceMood, t }) => {
   const isMedOtherSelected = formData.medicationTypes.includes(t('opt_med_detail')[2]);
 
   return (
@@ -571,6 +644,16 @@ const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicF
       <section className="bg-gradient-to-br from-[#c4d6c5]/20 to-[#f5ae71]/10 p-6 rounded-3xl border border-white shadow-sm">
         <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Star className="w-4 h-4 text-[#f5ae71] fill-current" />{t('q_massage')}</h3>
         <div className="grid grid-cols-3 gap-2">{t('opt_massage').map((opt) => (<RadioCard key={opt.v} label={opt.l} value={opt.v} selected={formData.massageIntensity} onClick={(v) => updateField('massageIntensity', v)} />))}</div>
+      </section>
+
+      {/* 🆕 Service Mood (접객 선호) */}
+      <section className="bg-[#fffbf7] p-5 rounded-2xl border border-[#f5ae71]/20">
+        <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2"><Coffee className="w-4 h-4 text-[#f5ae71]" /> {t('q_service_mood')}</h3>
+        <div className="grid grid-cols-1 gap-2">
+            {t('opt_service_mood').map((opt) => (
+                <CheckboxCard key={opt} label={opt} checked={formData.serviceMood.includes(opt)} onClick={() => toggleServiceMood(opt)} />
+            ))}
+        </div>
       </section>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -655,6 +738,9 @@ const Step3_Confirmation = ({ formData, t }) => {
     return summary;
   };
 
+  // 💡 [Modified] Filter out empty products for display
+  const validProducts = formData.products.filter(p => p.category.trim() !== '' || p.productName.trim() !== '');
+
   return (
     <div className="animate-slide-up pb-20">
       <div className="text-center mb-10">
@@ -670,6 +756,7 @@ const Step3_Confirmation = ({ formData, t }) => {
       </SummaryCard>
       <SummaryCard title={t('section_care')}>
         <SummaryItem label={t('q_massage')} value={getMassageLabel(formData.massageIntensity)} />
+        <SummaryItem label={t('q_service_mood')} value={formData.serviceMood} />
         <SummaryItem label={t('q_visit_freq')} value={formData.visitFrequency} />
         <SummaryItem label={t('q_shampoo_freq')} value={formData.shampooFrequency} />
       </SummaryCard>
@@ -683,9 +770,9 @@ const Step3_Confirmation = ({ formData, t }) => {
          </div>
       </SummaryCard>
 
-      {(formData.products.length > 0) && (
+      {(validProducts.length > 0) && (
         <SummaryCard title={t('section_items')}>
-          {formData.products.length > 0 && <div className="mb-2"><span className="text-slate-400 block text-xs mb-1">{t('q_products')}</span>{formData.products.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">[{p.category}] {p.productName}</div>)}</div>}
+          <div className="mb-2"><span className="text-slate-400 block text-xs mb-1">{t('q_products')}</span>{validProducts.map(p => <div key={p.id} className="pl-2 border-l-2 border-[#c4d6c5] mb-1">[{p.category}] {p.productName}</div>)}</div>
         </SummaryCard>
       )}
       {formData.requests && <SummaryCard title={t('section_req')}><p className="whitespace-pre-wrap">{formData.requests}</p></SummaryCard>}
@@ -721,7 +808,8 @@ const ClientView = ({ onBack, user, t }) => {
     massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], 
     requests: '',
     stylingPreference: [], 
-    medicationCheck: '', medicationTypes: [], medicationOther: ''
+    medicationCheck: '', medicationTypes: [], medicationOther: '',
+    serviceMood: [] // 🆕 Service Mood Added
   });
 
   const updateField = (field, value) => {
@@ -736,6 +824,9 @@ const ClientView = ({ onBack, user, t }) => {
   
   const toggleStylingPref = (opt) => setFormData(prev => ({ ...prev, stylingPreference: prev.stylingPreference.includes(opt) ? prev.stylingPreference.filter(o => o !== opt) : [...prev.stylingPreference, opt] }));
   const toggleMedDetail = (opt) => setFormData(prev => ({ ...prev, medicationTypes: prev.medicationTypes.includes(opt) ? prev.medicationTypes.filter(o => o !== opt) : [...prev.medicationTypes, opt] }));
+  
+  // 🆕 Service Mood Toggle
+  const toggleServiceMood = (opt) => setFormData(prev => ({ ...prev, serviceMood: prev.serviceMood.includes(opt) ? prev.serviceMood.filter(o => o !== opt) : [...prev.serviceMood, opt] }));
 
   const validatePhone = (phone) => /^[0-9]*$/.test(phone) && phone.length >= 9;
   const nextStep = () => {
@@ -748,14 +839,20 @@ const ClientView = ({ onBack, user, t }) => {
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 0));
   const handleHeaderBack = () => { if (currentStep > 0) prevStep(); else onBack(); };
 
+  // 💡 [Modified] Filter empty products before submit
   const handleSubmit = async () => {
     if (!user) return;
     setIsSaving(true);
+    
+    // Filter empty products
+    const validProducts = formData.products.filter(p => p.category.trim() !== '' || p.productName.trim() !== '');
+    const cleanFormData = { ...formData, products: validProducts };
+
     try {
       const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
       await Promise.race([
         addDoc(collection(db, 'consultations'), {
-          ...formData,
+          ...cleanFormData,
           createdAt: serverTimestamp(),
           status: 'waiting',
           userId: user.uid
@@ -779,7 +876,7 @@ const ClientView = ({ onBack, user, t }) => {
         <main className="flex-1 p-6 overflow-y-auto custom-scrollbar">
           {currentStep === 0 && <Step0_PersonalInfo formData={formData} updateField={updateField} phoneError={phoneError} t={t} />}
           {currentStep === 1 && <Step1_Basic formData={formData} updateField={updateField} toggleCondition={toggleCondition} toggleChemicalType={toggleChemicalType} t={t} />}
-          {currentStep === 2 && <Step2_Detailed formData={formData} updateField={updateField} addDynamicField={addDynamicField} removeDynamicField={removeDynamicField} updateDynamicField={updateDynamicField} toggleStylingPref={toggleStylingPref} toggleMedDetail={toggleMedDetail} t={t} />}
+          {currentStep === 2 && <Step2_Detailed formData={formData} updateField={updateField} addDynamicField={addDynamicField} removeDynamicField={removeDynamicField} updateDynamicField={updateDynamicField} toggleStylingPref={toggleStylingPref} toggleMedDetail={toggleMedDetail} toggleServiceMood={toggleServiceMood} t={t} />}
           {currentStep === 3 && <Step3_Confirmation formData={formData} t={t} />}
         </main>
         <footer className="p-6 border-t border-slate-100 bg-white sticky bottom-0 z-10 flex gap-3">
@@ -795,11 +892,142 @@ const ClientView = ({ onBack, user, t }) => {
 // ==========================================
 // ADMIN DASHBOARD
 // ==========================================
+// 💡 [New] Statistics Dashboard Component
+const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
+  const stats = useMemo(() => {
+    const totalVisits = customers.length;
+    const concerns = {};
+    const scalpTypes = {};
+    const moods = {};
+    const massageIntensities = {}; // New
+    const uniqueCustomers = {}; // To calculate retention
+
+    customers.forEach(c => {
+      // Retention Analysis
+      if(!uniqueCustomers[c.phone]) uniqueCustomers[c.phone] = 0;
+      uniqueCustomers[c.phone]++;
+
+      // Concerns
+      if (c.hairConditions) {
+        c.hairConditions.forEach(cond => {
+          const jaCond = getJapaneseValue('opt_concern', cond);
+          concerns[jaCond] = (concerns[jaCond] || 0) + 1;
+        });
+      }
+      // Scalp
+      if (c.scalpType) {
+        const jaScalp = getJapaneseValue('opt_scalp', c.scalpType);
+        scalpTypes[jaScalp] = (scalpTypes[jaScalp] || 0) + 1;
+      }
+      // Mood
+      if (c.serviceMood) {
+        c.serviceMood.forEach(m => {
+          const jaMood = getJapaneseValue('opt_service_mood', m);
+          moods[jaMood] = (moods[jaMood] || 0) + 1;
+        });
+      }
+      // Massage Intensity
+      if (c.massageIntensity) {
+         // Need to map value 'soft' -> '弱め'
+         const jaMassage = TRANSLATIONS['ja']['opt_massage'].find(m => m.v === c.massageIntensity)?.l || c.massageIntensity;
+         massageIntensities[jaMassage] = (massageIntensities[jaMassage] || 0) + 1;
+      }
+    });
+
+    // Retention Calculations
+    const totalUnique = Object.keys(uniqueCustomers).length;
+    const regularCount = Object.values(uniqueCustomers).filter(count => count > 1).length;
+    const retentionRate = totalUnique ? Math.round((regularCount / totalUnique) * 100) : 0;
+    const newRatio = 100 - retentionRate;
+
+    return { totalVisits, concerns, scalpTypes, moods, massageIntensities, retentionRate, newRatio };
+  }, [customers, getJapaneseValue]);
+
+  const renderBar = (label, count, total) => (
+    <div key={label} className="mb-3">
+      <div className="flex justify-between text-xs mb-1">
+        <span className="font-bold text-slate-700">{label}</span>
+        <span className="text-slate-500">{count}{tAdmin('stats_count')}</span>
+      </div>
+      <div className="w-full bg-slate-100 rounded-full h-2">
+        <div className="bg-[#f5ae71] h-2 rounded-full transition-all duration-500" style={{ width: `${(count / total) * 100}%` }}></div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="max-w-4xl mx-auto space-y-6 p-4">
+      {/* Overview Cards (Visits, Retention, New) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_total_visits')}</p>
+            <h3 className="text-4xl font-bold text-slate-800 mt-1">{stats.totalVisits}</h3>
+          </div>
+          <div className="w-12 h-12 bg-[#f5ae71]/10 text-[#f5ae71] rounded-full flex items-center justify-center">
+            <User className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_retention_rate')}</p>
+            <h3 className="text-4xl font-bold text-[#8da38e] mt-1">{stats.retentionRate}%</h3>
+          </div>
+          <div className="w-12 h-12 bg-[#8da38e]/10 text-[#8da38e] rounded-full flex items-center justify-center">
+            <TrendingUp className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_new_ratio')}</p>
+            <h3 className="text-4xl font-bold text-blue-500 mt-1">{stats.newRatio}%</h3>
+          </div>
+          <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+            <Users className="w-6 h-6" />
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Top Concerns */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#f5ae71]" /> {tAdmin('stats_concerns_rank')}</h3>
+          {Object.entries(stats.concerns).sort((a, b) => b[1] - a[1]).slice(0, 5).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
+        {/* Scalp Types */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><PieChart className="w-4 h-4 text-[#8da38e]" /> {tAdmin('stats_scalp_dist')}</h3>
+          {Object.entries(stats.scalpTypes).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
+        {/* Service Mood */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Coffee className="w-4 h-4 text-[#c4d6c5]" /> {tAdmin('stats_mood_pref')}</h3>
+          {Object.entries(stats.moods).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
+        {/* Massage Intensity (New) */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> {tAdmin('stats_massage_pref')}</h3>
+           {Object.entries(stats.massageIntensities).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AdminDashboard = ({ onBack, user }) => {
   const [customers, setCustomers] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true); // NEW: Sidebar toggle state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [visitCount, setVisitCount] = useState(1);
+  const [memoText, setMemoText] = useState("");
+  const [isMemoSaved, setIsMemoSaved] = useState(false);
+  const [currentView, setCurrentView] = useState('queue'); // 'queue' or 'stats'
 
   // 🌍 FORCE JAPANESE FOR ADMIN
   const tAdmin = (key) => TRANSLATIONS['ja'][key] || key;
@@ -826,19 +1054,49 @@ const AdminDashboard = ({ onBack, user }) => {
 
   useEffect(() => {
     if (!user) return;
-    const q = query(collection(db, 'consultations'), orderBy('createdAt', 'desc'), limit(50));
+    
+    let q;
+    if (searchTerm.length >= 4) {
+       q = query(collection(db, 'consultations'), where('phone', '>=', searchTerm), where('phone', '<=', searchTerm + '\uf8ff'), orderBy('phone'), orderBy('createdAt', 'desc'), limit(50));
+    } else {
+       q = query(collection(db, 'consultations'), orderBy('createdAt', 'desc'), limit(50));
+    }
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setCustomers(data);
       if (!selectedId && data.length > 0) setSelectedId(data[0].id);
     });
     return () => unsubscribe();
-  }, [user, selectedId]);
+  }, [user, selectedId, searchTerm]);
 
-  // Reset confirmation state when switching customers
+  // 💡 [Modified] Load Memo when selectedCustomer changes
+  const selectedCustomer = customers.find(c => c.id === selectedId);
+
   useEffect(() => {
-    setShowDeleteConfirm(false);
-  }, [selectedId]);
+    const fetchVisitCount = async () => {
+        if (!selectedId || !selectedCustomer) return;
+        try {
+            const q = query(
+                collection(db, 'consultations'),
+                where('phone', '==', selectedCustomer.phone),
+                where('name', '==', selectedCustomer.name)
+            );
+            const snapshot = await getDocs(q);
+            setVisitCount(snapshot.size); 
+        } catch (error) {
+            console.error("Error fetching visit count:", error);
+            setVisitCount(1);
+        }
+    };
+    
+    if (selectedCustomer) {
+        fetchVisitCount();
+        setMemoText(selectedCustomer.designerMemo || ""); // Load Memo
+    }
+    setShowDeleteConfirm(false); 
+  }, [selectedId, customers]);
+
 
   const updateStatus = async (newStatus) => {
     if (!selectedId) return;
@@ -846,6 +1104,20 @@ const AdminDashboard = ({ onBack, user }) => {
       const docRef = doc(db, 'consultations', selectedId);
       await updateDoc(docRef, { status: newStatus });
     } catch (error) { console.error(error); alert("Failed"); }
+  };
+
+  // 📝 Save Memo Function
+  const handleSaveMemo = async () => {
+    if (!selectedId) return;
+    try {
+        const docRef = doc(db, 'consultations', selectedId);
+        await updateDoc(docRef, { designerMemo: memoText });
+        setIsMemoSaved(true);
+        setTimeout(() => setIsMemoSaved(false), 2000);
+    } catch (e) {
+        console.error(e);
+        alert(tAdmin('error_save'));
+    }
   };
 
   // 🛠️ FIXED DELETE FUNCTION (No window.confirm)
@@ -861,7 +1133,6 @@ const AdminDashboard = ({ onBack, user }) => {
     }
   };
 
-  const selectedCustomer = customers.find(c => c.id === selectedId);
   const formatTime = (ts) => ts ? (ts.toDate ? ts.toDate() : new Date(ts)).toLocaleDateString('ja-JP', {month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit'}) : '';
 
   // 🧠 [Modified] Smart Critical Issues Logic
@@ -869,7 +1140,6 @@ const AdminDashboard = ({ onBack, user }) => {
     const issues = [];
     const scalp = getJapaneseValue('opt_scalp', customer.scalpType);
     
-    // 🟡 Scalp Alerts
     if (scalp === '乾燥') {
       issues.push({
         type: 'scalp_dry',
@@ -892,7 +1162,6 @@ const AdminDashboard = ({ onBack, user }) => {
       });
     }
 
-    // 🔴 Critical Alerts
     const conditions = customer.hairConditions || [];
     const hasCritical = conditions.some(c => {
       const jaVal = getJapaneseValue('opt_concern', c);
@@ -911,7 +1180,6 @@ const AdminDashboard = ({ onBack, user }) => {
       });
     }
 
-    // 🔵 Med/Safety Alerts
     if (customer.medicationCheck === 'yes') {
       issues.push({
         type: 'med',
@@ -938,7 +1206,7 @@ const AdminDashboard = ({ onBack, user }) => {
         <div className="flex items-center gap-4">
           
           {/* 👇 [Toggle Button] Show only when sidebar is CLOSED (Correct Order: Button -> Admin Badge -> Title) */}
-          {!isSidebarOpen && (
+          {!isSidebarOpen && currentView === 'queue' && (
             <button 
               onClick={() => setIsSidebarOpen(true)}
               className="p-1 rounded-full hover:bg-white/20 transition-colors text-white"
@@ -950,42 +1218,95 @@ const AdminDashboard = ({ onBack, user }) => {
 
           <div className="bg-white text-[#8da38e] px-2 py-1 text-xs font-bold rounded shadow-sm">ADMIN</div>
           <h1 className="text-lg font-bold text-white tracking-tight drop-shadow-sm">{tAdmin('admin_dashboard')}</h1>
+          
+          {/* 💡 [New] View Switcher Tabs */}
+          <div className="flex bg-[#8da38e] rounded-lg p-1 ml-4">
+             <button 
+               onClick={() => setCurrentView('queue')}
+               className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${currentView === 'queue' ? 'bg-white text-[#8da38e] shadow-sm' : 'text-white/70 hover:text-white'}`}
+             >
+               {tAdmin('tab_queue')}
+             </button>
+             <button 
+               onClick={() => setCurrentView('stats')}
+               className={`px-3 py-1 text-xs font-bold rounded-md transition-all ${currentView === 'stats' ? 'bg-white text-[#8da38e] shadow-sm' : 'text-white/70 hover:text-white'}`}
+             >
+               {tAdmin('tab_stats')}
+             </button>
+          </div>
         </div>
         <div className="flex items-center gap-4">
           <div className="text-sm text-white/80 font-medium">{new Date().toLocaleDateString('ja-JP')}</div>
           <button onClick={onBack} className="flex items-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors bg-white/10 px-3 py-1.5 rounded-full"><LogOut className="w-4 h-4" /> {tAdmin('back')}</button>
         </div>
       </header>
-      <div className="flex flex-1 overflow-hidden">
+      
+      {/* VIEW SWITCHER LOGIC */}
+      {currentView === 'stats' ? (
+        <div className="flex-1 overflow-y-auto bg-[#f5f7f5]">
+            <StatsView customers={customers} tAdmin={tAdmin} getJapaneseValue={getJapaneseValue} />
+        </div>
+      ) : (
+        <div className="flex flex-1 overflow-hidden">
+        
+        {/* 👇 Sidebar (Restored to Left Side) */}
         <aside className={`${isSidebarOpen ? 'w-80 border-r' : 'w-0 border-none'} bg-white border-[#c4d6c5]/30 flex flex-col z-10 transition-all duration-300 ease-in-out overflow-hidden`}>
           
-          {/* 👇 Sidebar Header with Close Button */}
-          <div className="p-4 border-b border-slate-100 flex items-center gap-3 bg-[#f9fcf9] shrink-0">
-            <button 
-              onClick={() => setIsSidebarOpen(false)}
-              className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
-              title="Close Sidebar"
-            >
-              <PanelLeft className="w-5 h-5" />
-            </button>
-            <span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{tAdmin('waiting_list')} ({customers.length})</span>
+          {/* 👇 Sidebar Header with Close Button & Search */}
+          <div className="p-4 border-b border-slate-100 flex flex-col gap-3 bg-[#f9fcf9] shrink-0">
+             <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => setIsSidebarOpen(false)}
+                  className="p-1 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-colors"
+                  title="Close Sidebar"
+                >
+                  <PanelLeft className="w-5 h-5" />
+                </button>
+                <span className="text-xs font-bold text-[#8da38e] uppercase tracking-wider">{tAdmin('waiting_list')} ({customers.length})</span>
+             </div>
+             {/* 💡 Search Input */}
+             <div className="relative">
+                <input 
+                  type="text" 
+                  placeholder={tAdmin('search_placeholder')} 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/10"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar">
-            {customers.map(c => (
-              <div key={c.id} onClick={() => setSelectedId(c.id)} className={`p-4 rounded-2xl cursor-pointer border transition-all duration-200 ${selectedId === c.id ? 'bg-[#f5ae71] text-white border-[#f5ae71] shadow-lg shadow-[#f5ae71]/30 transform scale-[1.02]' : 'bg-white text-slate-700 border-slate-100 hover:border-[#c4d6c5] hover:bg-[#f9fcf9]'}`}>
-                <div className="flex justify-between items-start mb-2"><span className="font-bold text-lg">{c.name}</span><div className="flex flex-col items-end gap-1"><span className={`text-xs px-2 py-1 rounded-full ${selectedId === c.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>{formatTime(c.createdAt)}</span><div className="scale-75 origin-right">{c.status === 'in_progress' && <span className={`w-2 h-2 rounded-full inline-block ${selectedId === c.id ? 'bg-white animate-pulse' : 'bg-[#f5ae71]'}`}></span>}{c.status === 'completed' && <Check className="w-3 h-3 inline-block" />}</div></div></div>
-                <div className={`text-xs flex items-center gap-1 ${selectedId === c.id ? 'text-white/80' : 'text-slate-400'}`}><Phone className="w-3 h-3" /> {c.phone}</div>
-              </div>
-            ))}
+            {customers.length === 0 ? (
+                <div className="text-center py-8 text-slate-400 text-sm">{tAdmin('no_results')}</div>
+            ) : (
+                customers.map(c => (
+                <div key={c.id} onClick={() => setSelectedId(c.id)} className={`p-4 rounded-2xl cursor-pointer border transition-all duration-200 ${selectedId === c.id ? 'bg-[#f5ae71] text-white border-[#f5ae71] shadow-lg shadow-[#f5ae71]/30 transform scale-[1.02]' : 'bg-white text-slate-700 border-slate-100 hover:border-[#c4d6c5] hover:bg-[#f9fcf9]'}`}>
+                    <div className="flex justify-between items-start mb-2"><span className="font-bold text-lg">{c.name}</span><div className="flex flex-col items-end gap-1"><span className={`text-xs px-2 py-1 rounded-full ${selectedId === c.id ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>{formatTime(c.createdAt)}</span><div className="scale-75 origin-right">{c.status === 'in_progress' && <span className={`w-2 h-2 rounded-full inline-block ${selectedId === c.id ? 'bg-white animate-pulse' : 'bg-[#f5ae71]'}`}></span>}{c.status === 'completed' && <Check className="w-3 h-3 inline-block" />}</div></div></div>
+                    <div className={`text-xs flex items-center gap-1 ${selectedId === c.id ? 'text-white/80' : 'text-slate-400'}`}><Phone className="w-3 h-3" /> {c.phone}</div>
+                </div>
+                ))
+            )}
           </div>
         </aside>
+
+        {/* Main Content Area */}
         <main className="flex-1 bg-[#f5f7f5] p-6 overflow-y-auto transition-all duration-300">
           {selectedCustomer ? (
             <div className="max-w-5xl mx-auto space-y-6">
               <div className="flex flex-col gap-4">
                 <div className="flex justify-between items-end">
-                  <div><h2 className="text-3xl font-bold text-slate-800">{selectedCustomer.name}</h2><p className="text-slate-500 text-sm mt-1">{selectedCustomer.phone}</p></div>
+                  <div>
+                    <div className="flex items-center gap-3">
+                        <h2 className="text-3xl font-bold text-slate-800">{selectedCustomer.name}</h2>
+                        {/* 💡 Visit Count Badge */}
+                        <div className={`px-3 py-1 rounded-full text-xs font-bold border ${visitCount === 1 ? 'bg-green-50 text-green-600 border-green-200' : 'bg-blue-50 text-blue-600 border-blue-200'}`}>
+                            {visitCount === 1 ? tAdmin('visit_new') : tAdmin('visit_regular')} ({visitCount}{tAdmin('visit_count_suffix')})
+                        </div>
+                    </div>
+                    <p className="text-slate-500 text-sm mt-1">{selectedCustomer.phone}</p>
+                  </div>
                   <div className="text-right flex flex-col items-end gap-2">
                     <div className="relative">
                       <select value={selectedCustomer.status || 'waiting'} onChange={(e) => updateStatus(e.target.value)} className="appearance-none bg-white border-2 border-[#c4d6c5] text-slate-600 py-2.5 pl-4 pr-10 rounded-xl font-bold text-sm focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 shadow-sm cursor-pointer hover:bg-[#f9fcf9] transition-colors">
@@ -1036,6 +1357,7 @@ const AdminDashboard = ({ onBack, user }) => {
                 </DashboardCard>
                 <DashboardCard title={tAdmin('section_care')} icon={Star} className="border-t-4 border-t-[#f5ae71]">
                   <div className="bg-[#fff8f2] p-3 rounded-xl mb-3 text-center border border-[#f5ae71]/10"><span className="text-xs text-[#e08e50] block mb-1">{tAdmin('q_massage')}</span><span className="text-xl font-bold text-slate-800">{getMassageLabel(selectedCustomer.massageIntensity)}</span></div>
+                  <DashboardRow label={tAdmin('q_service_mood')} value={getJapaneseValue('opt_service_mood', selectedCustomer.serviceMood)} />
                   <DashboardRow label={tAdmin('q_visit_freq')} value={getJapaneseValue('opt_visit', selectedCustomer.visitFrequency)} />
                   <DashboardRow label={tAdmin('q_shampoo_freq')} value={getJapaneseValue('opt_shampoo', selectedCustomer.shampooFrequency)} />
                 </DashboardCard>
@@ -1056,14 +1378,48 @@ const AdminDashboard = ({ onBack, user }) => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  <DashboardCard title={tAdmin('section_items')} icon={Droplet}>
-                    <div className="space-y-3 text-sm"><div><span className="text-xs text-slate-400 block mb-1 font-bold">{tAdmin('q_products')}</span>{selectedCustomer.products?.length > 0 ? selectedCustomer.products.map((p, i) => <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">[{p.category}] {p.productName}</div>) : <span className="text-slate-400">-</span>}</div></div>
+                    {/* 💡 [Modified] Handle Empty Products with '-' */}
+                    {selectedCustomer.products?.length > 0 ? (
+                        <div className="space-y-1 text-sm">
+                            {selectedCustomer.products.map((p, i) => (
+                                <div key={i} className="mb-1 text-slate-700 bg-slate-50 px-2 py-1 rounded">[{p.category}] {p.productName}</div>
+                            ))}
+                        </div>
+                    ) : <div className="text-slate-400 text-sm">-</div>}
                  </DashboardCard>
                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm"><div className="flex items-center gap-2 mb-2"><History className="w-4 h-4 text-slate-400" /><span className="font-bold text-slate-700 text-sm">{tAdmin('section_req')}</span></div><p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl">{selectedCustomer.requests || "-"}</p></div>
               </div>
+              
+              {/* 💡 [New] Designer Memo Section */}
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm mt-4">
+                <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-slate-400" />
+                        <h3 className="font-bold text-slate-700">{tAdmin('designer_memo')}</h3>
+                    </div>
+                    {isMemoSaved && <span className="text-xs text-green-500 font-bold animate-fade-in">{tAdmin('memo_saved')}</span>}
+                </div>
+                <textarea
+                    className="w-full h-24 p-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-[#f5ae71] focus:ring-2 focus:ring-[#f5ae71]/20 resize-none"
+                    placeholder={tAdmin('memo_placeholder')}
+                    value={memoText}
+                    onChange={(e) => setMemoText(e.target.value)}
+                />
+                <div className="text-right mt-2">
+                    <button
+                        onClick={handleSaveMemo}
+                        className="px-4 py-2 bg-[#8da38e] text-white text-sm font-bold rounded-lg hover:bg-[#7a8f7b] transition-colors"
+                    >
+                        {tAdmin('save_memo')}
+                    </button>
+                </div>
+              </div>
+
             </div>
           ) : <div className="h-full flex flex-col items-center justify-center text-slate-400"><User className="w-16 h-16 mb-4 opacity-10" /><p>{tAdmin('select_customer')}</p></div>}
         </main>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
