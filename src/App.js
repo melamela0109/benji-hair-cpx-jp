@@ -1,10 +1,9 @@
-// 성별 추가
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart // BarChart3, PieChart 포함됨
+  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart, Users, TrendingUp 
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -86,18 +85,18 @@ const TRANSLATIONS = {
     privacy_agree: "【必須】個人情報の収集および利用への同意",
     privacy_desc: "ご入力いただいた情報は、カウンセリングおよび施術の目的でのみ使用されます。",
     phone_error: "数字のみ入力してください。",
-    q_gender: "性別", // Moved to Step 0
-    opt_gender: ["女性", "男性", "その他"], // Moved to Step 0
+    q_gender: "性別",
+    opt_gender: ["女性", "男性", "その他"],
     // Step 1
     step1_title: "髪の状態チェック",
     step1_desc: "現在の髪の状態を把握するための基本的な項目です。",
-    q_hair_length: "髪の長さ",
+    q_hair_length: "1. 髪の長さ",
     opt_length: ["ショート", "ミディアム", "ロング", "その他"],
-    q_scalp: "頭皮の状態",
+    q_scalp: "2. 頭皮の状態",
     opt_scalp: ["乾燥", "脂性", "普通", "その他"],
-    q_concern: "お悩み（複数選択可）",
+    q_concern: "3. お悩み（複数選択可）",
     opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
-    q_history: "最近の施術経験（パーマ、カラー、ブリーチなど）",
+    q_history: "4. 最近の施術経験（パーマ、カラー、ブリーチなど）",
     opt_yes: "あり",
     opt_no: "なし",
     q_history_type: "施術の種類（複数選択可）",
@@ -168,6 +167,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "頭皮タイプ分布",
     stats_mood_pref: "希望する雰囲気",
     stats_massage_pref: "マッサージ強度",
+    stats_gender_dist: "性別分布", // New
     stats_count: "件"
   },
   ko: {
@@ -210,8 +210,8 @@ const TRANSLATIONS = {
     privacy_agree: "【필수】 개인정보 수집 및 이용 동의",
     privacy_desc: "입력해주신 정보는 상담 및 시술 목적으로만 사용됩니다.",
     phone_error: "숫자만 입력해 주세요.",
-    q_gender: "성별", // Moved to Step 0
-    opt_gender: ["여성", "남성", "기타"], // Moved to Step 0
+    q_gender: "성별", 
+    opt_gender: ["여성", "남성", "기타"], 
     step1_title: "모발 상태 체크",
     step1_desc: "현재 모발 상태를 파악하기 위한 기본 항목입니다.",
     q_hair_length: "1. 머리 길이",
@@ -286,6 +286,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "두피 타입 분포",
     stats_mood_pref: "선호하는 분위기",
     stats_massage_pref: "마사지 강도 선호",
+    stats_gender_dist: "성별 분포", // New
     stats_count: "건"
   },
   en: {
@@ -328,8 +329,8 @@ const TRANSLATIONS = {
     privacy_agree: "[Required] Privacy Policy Agreement",
     privacy_desc: "Information is used only for counseling and service purposes.",
     phone_error: "Numbers only.",
-    q_gender: "Gender", // Moved to Step 0
-    opt_gender: ["Female", "Male", "Other"], // Moved to Step 0
+    q_gender: "Gender",
+    opt_gender: ["Female", "Male", "Other"],
     step1_title: "Hair Condition",
     step1_desc: "Basic check for your current hair condition.",
     q_hair_length: "Hair Length",
@@ -403,6 +404,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "Scalp Type",
     stats_mood_pref: "Service Mood",
     stats_massage_pref: "Massage Pref",
+    stats_gender_dist: "Gender Dist", // New
     stats_count: ""
   }
 };
@@ -768,9 +770,13 @@ const Step3_Confirmation = ({ formData, t }) => {
         <div className="w-20 h-20 bg-[#c4d6c5]/20 text-[#8da38e] rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce-in"><CheckCircle2 className="w-10 h-10" /></div>
         <h2 className="text-2xl font-bold text-slate-800">{t('step3_title')}</h2>
       </div>
-      <SummaryCard title={t('section_basic')}><SummaryItem label={t('name_label')} value={formData.name} /><SummaryItem label={t('phone_label')} value={formData.phone} /></SummaryCard>
-      <SummaryCard title={t('section_status')}>
+      <SummaryCard title={t('section_basic')}>
+        <SummaryItem label={t('name_label')} value={formData.name} />
+        <SummaryItem label={t('phone_label')} value={formData.phone} />
+        {/* Gender Display */}
         <SummaryItem label={t('q_gender')} value={formData.gender} />
+      </SummaryCard>
+      <SummaryCard title={t('section_status')}>
         <SummaryItem label={t('q_hair_length')} value={formData.hairLength} />
         <SummaryItem label={t('q_scalp')} value={formData.scalpType} />
         <SummaryItem label={t('q_concern')} value={formData.hairConditions} />
@@ -922,8 +928,21 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
     const concerns = {};
     const scalpTypes = {};
     const moods = {};
+    const massageIntensities = {}; // New
+    const genders = {}; // New
+    const uniqueCustomers = {}; // To calculate retention
 
     customers.forEach(c => {
+      // Retention Analysis
+      if(!uniqueCustomers[c.phone]) uniqueCustomers[c.phone] = 0;
+      uniqueCustomers[c.phone]++;
+
+      // Gender
+      if (c.gender) {
+          const jaGender = getJapaneseValue('opt_gender', c.gender);
+          genders[jaGender] = (genders[jaGender] || 0) + 1;
+      }
+
       // Concerns
       if (c.hairConditions) {
         c.hairConditions.forEach(cond => {
@@ -943,10 +962,22 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
           moods[jaMood] = (moods[jaMood] || 0) + 1;
         });
       }
+      // Massage Intensity
+      if (c.massageIntensity) {
+         // Need to map value 'soft' -> '弱め'
+         const jaMassage = TRANSLATIONS['ja']['opt_massage'].find(m => m.v === c.massageIntensity)?.l || c.massageIntensity;
+         massageIntensities[jaMassage] = (massageIntensities[jaMassage] || 0) + 1;
+      }
     });
 
-    return { totalVisits, concerns, scalpTypes, moods };
-  }, [customers]);
+    // Retention Calculations
+    const totalUnique = Object.keys(uniqueCustomers).length;
+    const regularCount = Object.values(uniqueCustomers).filter(count => count > 1).length;
+    const retentionRate = totalUnique ? Math.round((regularCount / totalUnique) * 100) : 0;
+    const newRatio = 100 - retentionRate;
+
+    return { totalVisits, concerns, scalpTypes, moods, massageIntensities, retentionRate, newRatio, genders };
+  }, [customers, getJapaneseValue]);
 
   const renderBar = (label, count, total) => (
     <div key={label} className="mb-3">
@@ -962,8 +993,8 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-4">
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Overview Cards (Visits, Retention, New) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div>
             <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_total_visits')}</p>
@@ -973,10 +1004,35 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
             <User className="w-6 h-6" />
           </div>
         </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_retention_rate')}</p>
+            <h3 className="text-4xl font-bold text-[#8da38e] mt-1">{stats.retentionRate}%</h3>
+          </div>
+          <div className="w-12 h-12 bg-[#8da38e]/10 text-[#8da38e] rounded-full flex items-center justify-center">
+            <TrendingUp className="w-6 h-6" />
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
+          <div>
+            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_new_ratio')}</p>
+            <h3 className="text-4xl font-bold text-blue-500 mt-1">{stats.newRatio}%</h3>
+          </div>
+          <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
+            <Users className="w-6 h-6" />
+          </div>
+        </div>
       </div>
 
       {/* Charts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        {/* Gender Distribution */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Users className="w-4 h-4 text-blue-500" /> {tAdmin('stats_gender_dist')}</h3>
+          {Object.entries(stats.genders).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
         {/* Top Concerns */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><BarChart3 className="w-4 h-4 text-[#f5ae71]" /> {tAdmin('stats_concerns_rank')}</h3>
@@ -989,6 +1045,12 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
           {Object.entries(stats.scalpTypes).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
         </div>
 
+        {/* Massage Intensity (New) */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> {tAdmin('stats_massage_pref')}</h3>
+           {Object.entries(stats.massageIntensities).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
         {/* Service Mood */}
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 md:col-span-2">
           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Coffee className="w-4 h-4 text-[#c4d6c5]" /> {tAdmin('stats_mood_pref')}</h3>
@@ -996,6 +1058,7 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
              {Object.entries(stats.moods).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
           </div>
         </div>
+
       </div>
     </div>
   );
