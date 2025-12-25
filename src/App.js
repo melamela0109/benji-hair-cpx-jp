@@ -1,3 +1,4 @@
+// 성별 추가
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
