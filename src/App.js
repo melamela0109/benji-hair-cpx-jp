@@ -1,3 +1,4 @@
+//머리 길이 구분 추가
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
@@ -91,9 +92,17 @@ const TRANSLATIONS = {
     step1_title: "髪の状態チェック",
     step1_desc: "現在の髪の状態を把握するための基本的な項目です。",
     q_hair_length: "1. 髪の長さ",
-    opt_length: ["ショート", "ミディアム", "ロング", "その他"],
+    // [Modified] Detailed hair length options (JA)
+    opt_length: [
+        "ベリーショート (耳上・スポーツ刈り)",
+        "ショート (耳・首元が出る)",
+        "ミディアム (耳が隠れる・首にかかる)",
+        "ロング (肩上〜肩下)",
+        "スーパーロング (肩下)"
+    ],
     q_scalp: "2. 頭皮の状態",
-    opt_scalp: ["乾燥", "脂性", "普通", "その他"],
+    // [Modified] Scalp types (JA)
+    opt_scalp: ["乾燥", "脂性", "混合", "普通"],
     q_concern: "3. お悩み（複数選択可）",
     opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
     q_history: "4. 最近の施術経験（パーマ、カラー、ブリーチなど）",
@@ -112,8 +121,7 @@ const TRANSLATIONS = {
     opt_massage: [{v:'soft', l:'弱め'}, {v:'normal', l:'普通'}, {v:'strong', l:'強め'}],
     q_visit_freq: "美容室に行く頻度",
     opt_visit: ["選択しない", "毎週", "2~4週間", "2~3ヶ月", "6ヶ月以上"],
-    q_shampoo_freq: "シャンプーの頻度",
-    opt_shampoo: ["選択しない", "毎日", "2日に1回", "週2回以下"],
+    // [Removed] Shampoo Frequency
     q_products: "使用中の製品 (例: シャンプー、リンス等)",
     ph_prod_type: "製品の種類 (例: シャンプー)",
     ph_prod_name: "製品名",
@@ -167,7 +175,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "頭皮タイプ分布",
     stats_mood_pref: "希望する雰囲気",
     stats_massage_pref: "マッサージ強度",
-    stats_gender_dist: "性別分布", // New
+    stats_gender_dist: "性別分布", 
     stats_count: "件"
   },
   ko: {
@@ -215,9 +223,17 @@ const TRANSLATIONS = {
     step1_title: "모발 상태 체크",
     step1_desc: "현재 모발 상태를 파악하기 위한 기본 항목입니다.",
     q_hair_length: "1. 머리 길이",
-    opt_length: ["짧음", "중간", "긴머리", "기타"],
+    // [Modified] Detailed hair length options (KO)
+    opt_length: [
+        "매우 짧음 (귀 위 / 스포츠컷 수준)",
+        "짧음 (귀·목선이 드러남)",
+        "중간 (귀를 덮거나 목에 닿는 길이)",
+        "김 (어깨 위~어깨 아래)",
+        "매우 김 (어깨 아래)"
+    ],
     q_scalp: "2. 두피 상태",
-    opt_scalp: ["건성", "지성", "보통", "기타"],
+    // [Modified] Scalp types (KO)
+    opt_scalp: ["건성", "지성", "복합성", "중성"],
     q_concern: "3. 고민 사항 (중복 가능)",
     opt_concern: ["탈모", "손상", "건조", "끊어짐/갈라짐", "비듬", "가려움", "없음"],
     q_history: "4. 최근 시술 경험 (ex. 펌, 염색, 탈색)",
@@ -235,8 +251,7 @@ const TRANSLATIONS = {
     opt_massage: [{v:'soft', l:'약하게'}, {v:'normal', l:'보통'}, {v:'strong', l:'강하게'}],
     q_visit_freq: "미용실 방문 주기",
     opt_visit: ["선택 안 함", "매주", "2~4주", "2~3개월", "6개월 이상"],
-    q_shampoo_freq: "샴푸 빈도",
-    opt_shampoo: ["선택 안 함", "매일", "2일에 1회", "주 2회 이하"],
+    // [Removed] Shampoo Frequency
     q_products: "사용 중인 제품 (ex. 샴푸, 컨디셔너 등 헤어관련제품)",
     ph_prod_type: "제품 종류 (ex. 샴푸)",
     ph_prod_name: "제품명",
@@ -286,7 +301,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "두피 타입 분포",
     stats_mood_pref: "선호하는 분위기",
     stats_massage_pref: "마사지 강도 선호",
-    stats_gender_dist: "성별 분포", // New
+    stats_gender_dist: "성별 분포", 
     stats_count: "건"
   },
   en: {
@@ -334,9 +349,15 @@ const TRANSLATIONS = {
     step1_title: "Hair Condition",
     step1_desc: "Basic check for your current hair condition.",
     q_hair_length: "Hair Length",
-    opt_length: ["Short", "Medium", "Long", "Other"],
+    opt_length: [
+        "Very Short (Above ears)",
+        "Short (Ears/neck visible)",
+        "Medium (Covering ears)",
+        "Long (Shoulder length)",
+        "Very Long (Below shoulder)"
+    ],
     q_scalp: "Scalp Type",
-    opt_scalp: ["Dry", "Oily", "Normal", "Other"],
+    opt_scalp: ["Dry", "Oily", "Combination", "Normal"],
     q_concern: "Concerns",
     opt_concern: ["Hair Loss", "Damage", "Dryness", "Split Ends", "Dandruff", "Itchiness", "None"],
     q_history: "Recent History",
@@ -354,8 +375,7 @@ const TRANSLATIONS = {
     opt_massage: [{v:'soft', l:'Soft'}, {v:'normal', l:'Normal'}, {v:'strong', l:'Strong'}],
     q_visit_freq: "Visit Frequency",
     opt_visit: ["None", "Weekly", "2-4 Weeks", "2-3 Months", "6+ Months"],
-    q_shampoo_freq: "Shampoo Frequency",
-    opt_shampoo: ["None", "Daily", "Every 2 days", "Twice a week"],
+    // [Removed] Shampoo Frequency
     q_products: "Products Used",
     ph_prod_type: "Product Type",
     ph_prod_name: "Product Name",
@@ -404,7 +424,7 @@ const TRANSLATIONS = {
     stats_scalp_dist: "Scalp Type",
     stats_mood_pref: "Service Mood",
     stats_massage_pref: "Massage Pref",
-    stats_gender_dist: "Gender Dist", // New
+    stats_gender_dist: "Gender Dist", 
     stats_count: ""
   }
 };
@@ -624,13 +644,24 @@ const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
   </div>
 );
 
-// 💡 [Modified] Step 1 (Removed Gender)
+// 💡 [Modified] Step 1 (Removed Gender, Updated Hair Length/Scalp)
 const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalType, t }) => (
   <div className="animate-slide-up space-y-8">
     <div><SectionTitle icon={Scissors} title={t('step1_title')} /><div className="bg-[#f9fcf9] p-5 rounded-2xl border border-[#c4d6c5]/30 mb-6 text-sm text-slate-600 leading-relaxed">{t('step1_desc')}</div></div>
     
-    <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_hair_length')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_length').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.hairLength} onClick={(v) => updateField('hairLength', v)} />))}</div></section>
-    <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_scalp')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_scalp').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.scalpType} onClick={(v) => updateField('scalpType', v)} />))}</div></section>
+    <section>
+        <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_hair_length')}</h3>
+        {/* [Modified] Use single column for detailed text */}
+        <div className="grid grid-cols-1 gap-2">
+            {t('opt_length').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.hairLength} onClick={(v) => updateField('hairLength', v)} />))}
+        </div>
+    </section>
+    <section>
+        <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_scalp')}</h3>
+        <div className="grid grid-cols-2 gap-2">
+            {t('opt_scalp').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.scalpType} onClick={(v) => updateField('scalpType', v)} />))}
+        </div>
+    </section>
     <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_concern')}</h3><div className="grid grid-cols-2 gap-2">{t('opt_concern').map((opt) => (<CheckboxCard key={opt} label={opt} checked={formData.hairConditions.includes(opt)} onClick={() => toggleCondition(opt)} />))}</div></section>
     <section>
       <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_history')}</h3>
@@ -679,14 +710,11 @@ const Step2_Detailed = ({ formData, updateField, addDynamicField, removeDynamicF
         </div>
       </section>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+      {/* 💡 [Modified] Removed Shampoo Frequency */}
+      <div className="grid grid-cols-1 gap-6">
         <section>
           <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Calendar className="w-4 h-4 text-[#c4d6c5]" /> {t('q_visit_freq')}</h3>
           <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.visitFrequency} onChange={(e) => updateField('visitFrequency', e.target.value)}>{t('opt_visit').map(o=><option key={o} value={o}>{o}</option>)}</select>
-        </section>
-        <section>
-          <h3 className="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2 pl-1"><Droplet className="w-4 h-4 text-[#c4d6c5]" /> {t('q_shampoo_freq')}</h3>
-          <select className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:border-[#c4d6c5] focus:ring-2 focus:ring-[#c4d6c5]/20 outline-none" value={formData.shampooFrequency} onChange={(e) => updateField('shampooFrequency', e.target.value)}>{t('opt_shampoo').map(o=><option key={o} value={o}>{o}</option>)}</select>
         </section>
       </div>
 
@@ -786,7 +814,7 @@ const Step3_Confirmation = ({ formData, t }) => {
         <SummaryItem label={t('q_massage')} value={getMassageLabel(formData.massageIntensity)} />
         <SummaryItem label={t('q_service_mood')} value={formData.serviceMood} />
         <SummaryItem label={t('q_visit_freq')} value={formData.visitFrequency} />
-        <SummaryItem label={t('q_shampoo_freq')} value={formData.shampooFrequency} />
+        {/* Removed Shampoo Freq */}
       </SummaryCard>
       <SummaryCard title={t('section_pref')}>
          <SummaryItem label={t('q_styling_pref')} value={formData.stylingPreference} />
@@ -875,7 +903,9 @@ const ClientView = ({ onBack, user, t }) => {
     
     // Filter empty products
     const validProducts = formData.products.filter(p => p.category.trim() !== '' || p.productName.trim() !== '');
-    const cleanFormData = { ...formData, products: validProducts };
+    // Clean formData and remove shampooFrequency if it exists
+    const { shampooFrequency, ...restFormData } = formData;
+    const cleanFormData = { ...restFormData, products: validProducts };
 
     try {
       const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 10000));
@@ -1420,7 +1450,7 @@ const AdminDashboard = ({ onBack, user }) => {
                     </div>
                   </div>
                   <DashboardRow label={tAdmin('q_visit_freq')} value={getJapaneseValue('opt_visit', selectedCustomer.visitFrequency)} />
-                  <DashboardRow label={tAdmin('q_shampoo_freq')} value={getJapaneseValue('opt_shampoo', selectedCustomer.shampooFrequency)} />
+                  {/* Removed Shampoo Freq */}
                 </DashboardCard>
                 <DashboardCard title={tAdmin('section_pref')} icon={CheckSquare} className="border-t-4 border-t-[#c4d6c5]">
                    <div className="mb-4">
