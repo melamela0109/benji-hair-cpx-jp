@@ -3,7 +3,7 @@ import {
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart, Users, TrendingUp 
+  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart // BarChart3, PieChart 포함됨
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -85,16 +85,18 @@ const TRANSLATIONS = {
     privacy_agree: "【必須】個人情報の収集および利用への同意",
     privacy_desc: "ご入力いただいた情報は、カウンセリングおよび施術の目的でのみ使用されます。",
     phone_error: "数字のみ入力してください。",
+    q_gender: "性別", // Moved to Step 0
+    opt_gender: ["女性", "男性", "その他"], // Moved to Step 0
     // Step 1
     step1_title: "髪の状態チェック",
     step1_desc: "現在の髪の状態を把握するための基本的な項目です。",
-    q_hair_length: "1. 髪の長さ",
+    q_hair_length: "髪の長さ",
     opt_length: ["ショート", "ミディアム", "ロング", "その他"],
-    q_scalp: "2. 頭皮の状態",
+    q_scalp: "頭皮の状態",
     opt_scalp: ["乾燥", "脂性", "普通", "その他"],
-    q_concern: "3. お悩み（複数選択可）",
+    q_concern: "お悩み（複数選択可）",
     opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
-    q_history: "4. 最近の施術経験（パーマ、カラー、ブリーチなど）",
+    q_history: "最近の施術経験（パーマ、カラー、ブリーチなど）",
     opt_yes: "あり",
     opt_no: "なし",
     q_history_type: "施術の種類（複数選択可）",
@@ -207,6 +209,8 @@ const TRANSLATIONS = {
     privacy_agree: "【필수】 개인정보 수집 및 이용 동의",
     privacy_desc: "입력해주신 정보는 상담 및 시술 목적으로만 사용됩니다.",
     phone_error: "숫자만 입력해 주세요.",
+    q_gender: "성별", // Moved to Step 0
+    opt_gender: ["여성", "남성", "기타"], // Moved to Step 0
     step1_title: "모발 상태 체크",
     step1_desc: "현재 모발 상태를 파악하기 위한 기본 항목입니다.",
     q_hair_length: "1. 머리 길이",
@@ -323,15 +327,17 @@ const TRANSLATIONS = {
     privacy_agree: "[Required] Privacy Policy Agreement",
     privacy_desc: "Information is used only for counseling and service purposes.",
     phone_error: "Numbers only.",
+    q_gender: "Gender", // Moved to Step 0
+    opt_gender: ["Female", "Male", "Other"], // Moved to Step 0
     step1_title: "Hair Condition",
     step1_desc: "Basic check for your current hair condition.",
-    q_hair_length: "1. Hair Length",
+    q_hair_length: "Hair Length",
     opt_length: ["Short", "Medium", "Long", "Other"],
-    q_scalp: "2. Scalp Type",
+    q_scalp: "Scalp Type",
     opt_scalp: ["Dry", "Oily", "Normal", "Other"],
-    q_concern: "3. Concerns (Multiple)",
+    q_concern: "Concerns",
     opt_concern: ["Hair Loss", "Damage", "Dryness", "Split Ends", "Dandruff", "Itchiness", "None"],
-    q_history: "4. Recent History (Perm, Color, Bleach, etc.)",
+    q_history: "Recent History",
     opt_yes: "Yes",
     opt_no: "No",
     q_history_type: "Treatment Type",
@@ -348,7 +354,7 @@ const TRANSLATIONS = {
     opt_visit: ["None", "Weekly", "2-4 Weeks", "2-3 Months", "6+ Months"],
     q_shampoo_freq: "Shampoo Frequency",
     opt_shampoo: ["None", "Daily", "Every 2 days", "Twice a week"],
-    q_products: "Products Used (ex. Shampoo, Conditioner)",
+    q_products: "Products Used",
     ph_prod_type: "Product Type",
     ph_prod_name: "Product Name",
     add_item: "Add Item",
@@ -582,6 +588,7 @@ const DynamicInputs = ({ items, type, placeholder1, placeholder2, onAdd, onRemov
 );
 
 // --- STEPS ---
+// 💡 [Modified] Step 0 includes Gender Selection
 const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
   <div className="animate-slide-up">
     <SectionTitle icon={User} title={t('step0_title')} subTitle={t('step0_desc')} />
@@ -592,6 +599,17 @@ const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
         <input type="tel" value={formData.phone} onChange={(e) => updateField('phone', e.target.value)} placeholder={t('phone_placeholder')} className={`w-full px-5 py-4 border rounded-2xl focus:outline-none focus:ring-4 transition-all bg-white ${phoneError ? 'border-red-300 focus:ring-red-100' : 'border-slate-200 focus:border-[#f5ae71] focus:ring-[#f5ae71]/10'}`} />
         {phoneError && <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1 animate-fade-in"><AlertTriangle className="w-3 h-3" /> {t('phone_error')}</p>}
       </div>
+
+      {/* 💡 [Moved] Gender Selection Here */}
+      <div>
+        <label className="block text-sm font-bold text-slate-700 mb-2 pl-1">{t('q_gender')}</label>
+        <div className="grid grid-cols-3 gap-2">
+            {t('opt_gender').map((opt) => (
+                <RadioCard key={opt} label={opt} value={opt} selected={formData.gender} onClick={(v) => updateField('gender', v)} />
+            ))}
+        </div>
+      </div>
+
       <div className="pt-6 border-t border-slate-100">
         <label className="flex items-start gap-3 cursor-pointer p-4 rounded-2xl hover:bg-[#f9fcf9] transition-colors border border-transparent hover:border-[#c4d6c5]/30">
           <div className={`mt-0.5 w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-colors ${formData.privacyAgreed ? 'bg-[#c4d6c5]' : 'bg-slate-200'}`}><Check className="w-3 h-3 text-white" /></div>
@@ -603,9 +621,11 @@ const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
   </div>
 );
 
+// 💡 [Modified] Step 1 (Removed Gender)
 const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalType, t }) => (
   <div className="animate-slide-up space-y-8">
     <div><SectionTitle icon={Scissors} title={t('step1_title')} /><div className="bg-[#f9fcf9] p-5 rounded-2xl border border-[#c4d6c5]/30 mb-6 text-sm text-slate-600 leading-relaxed">{t('step1_desc')}</div></div>
+    
     <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_hair_length')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_length').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.hairLength} onClick={(v) => updateField('hairLength', v)} />))}</div></section>
     <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_scalp')}</h3><div className="grid grid-cols-4 gap-2">{t('opt_scalp').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.scalpType} onClick={(v) => updateField('scalpType', v)} />))}</div></section>
     <section><h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_concern')}</h3><div className="grid grid-cols-2 gap-2">{t('opt_concern').map((opt) => (<CheckboxCard key={opt} label={opt} checked={formData.hairConditions.includes(opt)} onClick={() => toggleCondition(opt)} />))}</div></section>
@@ -749,6 +769,7 @@ const Step3_Confirmation = ({ formData, t }) => {
       </div>
       <SummaryCard title={t('section_basic')}><SummaryItem label={t('name_label')} value={formData.name} /><SummaryItem label={t('phone_label')} value={formData.phone} /></SummaryCard>
       <SummaryCard title={t('section_status')}>
+        <SummaryItem label={t('q_gender')} value={formData.gender} />
         <SummaryItem label={t('q_hair_length')} value={formData.hairLength} />
         <SummaryItem label={t('q_scalp')} value={formData.scalpType} />
         <SummaryItem label={t('q_concern')} value={formData.hairConditions} />
@@ -803,6 +824,7 @@ const ClientView = ({ onBack, user, t }) => {
 
   const [formData, setFormData] = useState({
     name: '', phone: '', privacyAgreed: false, 
+    gender: '', // New
     hairLength: '', scalpType: '', hairConditions: [],
     chemicalHistory: '', chemicalHistoryTime: '', chemicalHistoryTypes: [], 
     massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], 
@@ -899,14 +921,8 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
     const concerns = {};
     const scalpTypes = {};
     const moods = {};
-    const massageIntensities = {}; // New
-    const uniqueCustomers = {}; // To calculate retention
 
     customers.forEach(c => {
-      // Retention Analysis
-      if(!uniqueCustomers[c.phone]) uniqueCustomers[c.phone] = 0;
-      uniqueCustomers[c.phone]++;
-
       // Concerns
       if (c.hairConditions) {
         c.hairConditions.forEach(cond => {
@@ -926,22 +942,10 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
           moods[jaMood] = (moods[jaMood] || 0) + 1;
         });
       }
-      // Massage Intensity
-      if (c.massageIntensity) {
-         // Need to map value 'soft' -> '弱め'
-         const jaMassage = TRANSLATIONS['ja']['opt_massage'].find(m => m.v === c.massageIntensity)?.l || c.massageIntensity;
-         massageIntensities[jaMassage] = (massageIntensities[jaMassage] || 0) + 1;
-      }
     });
 
-    // Retention Calculations
-    const totalUnique = Object.keys(uniqueCustomers).length;
-    const regularCount = Object.values(uniqueCustomers).filter(count => count > 1).length;
-    const retentionRate = totalUnique ? Math.round((regularCount / totalUnique) * 100) : 0;
-    const newRatio = 100 - retentionRate;
-
-    return { totalVisits, concerns, scalpTypes, moods, massageIntensities, retentionRate, newRatio };
-  }, [customers, getJapaneseValue]);
+    return { totalVisits, concerns, scalpTypes, moods };
+  }, [customers]);
 
   const renderBar = (label, count, total) => (
     <div key={label} className="mb-3">
@@ -957,8 +961,8 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 p-4">
-      {/* Overview Cards (Visits, Retention, New) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {/* Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
           <div>
             <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_total_visits')}</p>
@@ -966,24 +970,6 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
           </div>
           <div className="w-12 h-12 bg-[#f5ae71]/10 text-[#f5ae71] rounded-full flex items-center justify-center">
             <User className="w-6 h-6" />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-          <div>
-            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_retention_rate')}</p>
-            <h3 className="text-4xl font-bold text-[#8da38e] mt-1">{stats.retentionRate}%</h3>
-          </div>
-          <div className="w-12 h-12 bg-[#8da38e]/10 text-[#8da38e] rounded-full flex items-center justify-center">
-            <TrendingUp className="w-6 h-6" />
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center justify-between">
-          <div>
-            <p className="text-slate-400 text-xs font-bold uppercase">{tAdmin('stats_new_ratio')}</p>
-            <h3 className="text-4xl font-bold text-blue-500 mt-1">{stats.newRatio}%</h3>
-          </div>
-          <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center">
-            <Users className="w-6 h-6" />
           </div>
         </div>
       </div>
@@ -1003,15 +989,11 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
         </div>
 
         {/* Service Mood */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 md:col-span-2">
           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Coffee className="w-4 h-4 text-[#c4d6c5]" /> {tAdmin('stats_mood_pref')}</h3>
-          {Object.entries(stats.moods).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
-        </div>
-
-        {/* Massage Intensity (New) */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Star className="w-4 h-4 text-yellow-500" /> {tAdmin('stats_massage_pref')}</h3>
-           {Object.entries(stats.massageIntensities).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             {Object.entries(stats.moods).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+          </div>
         </div>
       </div>
     </div>
@@ -1351,13 +1333,28 @@ const AdminDashboard = ({ onBack, user }) => {
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <DashboardCard title={tAdmin('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
+                  <DashboardRow label={tAdmin('q_gender')} value={getJapaneseValue('opt_gender', selectedCustomer.gender)} />
                   <DashboardRow label={tAdmin('q_hair_length')} value={getJapaneseValue('opt_length', selectedCustomer.hairLength)} />
                   <DashboardRow label={tAdmin('q_scalp')} value={getJapaneseValue('opt_scalp', selectedCustomer.scalpType)} />
                   <div className="mt-4 pt-4 border-t border-slate-50"><span className="text-xs font-bold text-[#f5ae71] block mb-1">{tAdmin('q_history')}</span>{selectedCustomer.chemicalHistory === 'yes' ? (<div className="bg-[#fff8f2] p-3 rounded-xl border border-[#f5ae71]/20"><div className="text-[#e08e50] font-bold text-sm mb-1">{getJapaneseValue('opt_time', selectedCustomer.chemicalHistoryTime)}</div><div className="flex gap-1 flex-wrap">{selectedCustomer.chemicalHistoryTypes?.map(t => <span key={t} className="text-[10px] bg-white text-[#e08e50] px-2 py-0.5 rounded border border-[#f5ae71]/20">{getJapaneseValue('opt_history_type', t)}</span>)}</div></div>) : <span className="text-slate-400 text-sm">{tAdmin('opt_no')}</span>}</div>
                 </DashboardCard>
                 <DashboardCard title={tAdmin('section_care')} icon={Star} className="border-t-4 border-t-[#f5ae71]">
                   <div className="bg-[#fff8f2] p-3 rounded-xl mb-3 text-center border border-[#f5ae71]/10"><span className="text-xs text-[#e08e50] block mb-1">{tAdmin('q_massage')}</span><span className="text-xl font-bold text-slate-800">{getMassageLabel(selectedCustomer.massageIntensity)}</span></div>
-                  <DashboardRow label={tAdmin('q_service_mood')} value={getJapaneseValue('opt_service_mood', selectedCustomer.serviceMood)} />
+                  {/* [FIXED] Updated Custom Render for Service Mood (Line break) */}
+                  <div className="flex justify-between items-start py-3 border-b border-slate-50 last:border-0">
+                    <span className="text-sm text-slate-500 shrink-0 w-24">{tAdmin('q_service_mood')}</span>
+                    <div className="font-medium text-slate-800 text-right flex-1 ml-2">
+                        {selectedCustomer.serviceMood && selectedCustomer.serviceMood.length > 0 ? (
+                        <div className="flex flex-col items-end gap-2">
+                            {selectedCustomer.serviceMood.map((mood, idx) => (
+                            <span key={idx} className="bg-[#fff8f2] text-[#e08e50] border border-[#f5ae71]/20 px-2 py-1.5 rounded-lg text-xs font-bold leading-normal text-right shadow-sm">
+                                {getJapaneseValue('opt_service_mood', mood)}
+                            </span>
+                            ))}
+                        </div>
+                        ) : '-'}
+                    </div>
+                  </div>
                   <DashboardRow label={tAdmin('q_visit_freq')} value={getJapaneseValue('opt_visit', selectedCustomer.visitFrequency)} />
                   <DashboardRow label={tAdmin('q_shampoo_freq')} value={getJapaneseValue('opt_shampoo', selectedCustomer.shampooFrequency)} />
                 </DashboardCard>
@@ -1428,6 +1425,13 @@ const AdminDashboard = ({ onBack, user }) => {
 const SummaryCard = ({ title, children }) => (<div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm mb-4 hover:shadow-md transition-shadow"><h3 className="text-xs font-bold text-[#8da38e] uppercase mb-4 pb-2 border-b border-slate-50">{title}</h3><div className="space-y-3 text-sm">{children}</div></div>);
 const SummaryItem = ({ label, value }) => value && value.length > 0 ? (<div className="flex justify-between items-start"><span className="text-slate-400 font-medium">{label}</span><span className="font-bold text-slate-700 text-right max-w-[60%] break-keep">{Array.isArray(value) ? value.join(', ') : value}</span></div>) : null;
 const DashboardCard = ({ title, icon: Icon, children, className = '' }) => (<div className={`bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex flex-col ${className}`}><div className="flex items-center gap-2 mb-4 pb-2 border-b border-slate-50"><Icon className="w-5 h-5 text-slate-400"/><h3 className="font-bold text-slate-700">{title}</h3></div><div className="flex-1">{children}</div></div>);
-const DashboardRow = ({ label, value }) => (<div className="flex justify-between py-2 border-b border-slate-50 last:border-0"><span className="text-sm text-slate-500">{label}</span><span className="font-medium text-slate-800">{value || '-'}</span></div>);
+const DashboardRow = ({ label, value }) => (
+  <div className="flex justify-between items-start py-3 border-b border-slate-50 last:border-0">
+    <span className="text-sm text-slate-500 shrink-0 w-24">{label}</span>
+    <div className="font-medium text-slate-800 text-right flex-1 ml-2 break-words">
+      {value || '-'}
+    </div>
+  </div>
+);
 
 export default BenjiHairApp;
