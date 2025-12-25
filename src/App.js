@@ -1,10 +1,10 @@
-//머리 길이 구분 추가
+//머리 길이 구분 추가 + 모발 결(자연 상태) 추가
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
   Star, Activity, Calendar, Droplet, CheckCircle2, LayoutDashboard, 
   AlertTriangle, History, Phone, Clock, LogOut, SkipForward, Play, CheckSquare, Heart, ChevronDown, Lock, Globe,
-  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart, Users, TrendingUp 
+  XCircle, AlertCircle, Pill, PanelLeft, Search, FileText, Coffee, BarChart3, PieChart, Users, TrendingUp, Layers
 } from 'lucide-react';
 
 // --- Firebase Imports ---
@@ -100,12 +100,17 @@ const TRANSLATIONS = {
         "ロング (肩上〜肩下)",
         "スーパーロング (肩下)"
     ],
-    q_scalp: "2. 頭皮の状態",
+    // 🆕 Hair Texture (JA)
+    q_hair_texture: "2. 髪質（自然な状態）",
+    hint_hair_texture: "💡 ドライ・パーマをしていない自然な状態でお選びください。",
+    opt_hair_texture: ["直毛", "くせ毛（弱）", "くせ毛（強）", "わからない"],
+    
+    q_scalp: "3. 頭皮の状態",
     // [Modified] Scalp types (JA)
     opt_scalp: ["乾燥", "脂性", "混合", "普通"],
-    q_concern: "3. お悩み（複数選択可）",
+    q_concern: "4. お悩み（複数選択可）",
     opt_concern: ["抜け毛", "ダメージ", "乾燥", "切れ毛・枝毛", "フケ", "かゆみ", "特になし"],
-    q_history: "4. 最近の施術経験（パーマ、カラー、ブリーチなど）",
+    q_history: "5. 最近の施術経験（パーマ、カラー、ブリーチなど）",
     opt_yes: "あり",
     opt_no: "なし",
     q_history_type: "施術の種類（複数選択可）",
@@ -173,6 +178,7 @@ const TRANSLATIONS = {
     stats_new_ratio: "新規比率",
     stats_concerns_rank: "悩みランキング (TOP 5)",
     stats_scalp_dist: "頭皮タイプ分布",
+    stats_hair_texture: "髪質分布", // New
     stats_mood_pref: "希望する雰囲気",
     stats_massage_pref: "マッサージ強度",
     stats_gender_dist: "性別分布", 
@@ -231,12 +237,17 @@ const TRANSLATIONS = {
         "김 (어깨 위~어깨 아래)",
         "매우 김 (어깨 아래)"
     ],
-    q_scalp: "2. 두피 상태",
+    // 🆕 Hair Texture (KO)
+    q_hair_texture: "2. 모발 결(자연 상태)",
+    hint_hair_texture: "💡 “드라이·펌을 하지 않은 자연 상태 기준으로 선택해주세요.”",
+    opt_hair_texture: ["직모", "반곱슬", "곱슬", "잘 모르겠음"],
+
+    q_scalp: "3. 두피 상태",
     // [Modified] Scalp types (KO)
     opt_scalp: ["건성", "지성", "복합성", "중성"],
-    q_concern: "3. 고민 사항 (중복 가능)",
+    q_concern: "4. 고민 사항 (중복 가능)",
     opt_concern: ["탈모", "손상", "건조", "끊어짐/갈라짐", "비듬", "가려움", "없음"],
-    q_history: "4. 최근 시술 경험 (ex. 펌, 염색, 탈색)",
+    q_history: "5. 최근 시술 경험 (ex. 펌, 염색, 탈색)",
     opt_yes: "있음",
     opt_no: "없음",
     q_history_type: "시술 종류 (중복 가능)",
@@ -299,6 +310,7 @@ const TRANSLATIONS = {
     stats_new_ratio: "신규 비율",
     stats_concerns_rank: "고민 랭킹 (TOP 5)",
     stats_scalp_dist: "두피 타입 분포",
+    stats_hair_texture: "모발 결 분포", // New
     stats_mood_pref: "선호하는 분위기",
     stats_massage_pref: "마사지 강도 선호",
     stats_gender_dist: "성별 분포", 
@@ -348,7 +360,7 @@ const TRANSLATIONS = {
     opt_gender: ["Female", "Male", "Other"],
     step1_title: "Hair Condition",
     step1_desc: "Basic check for your current hair condition.",
-    q_hair_length: "Hair Length",
+    q_hair_length: "1. Hair Length",
     opt_length: [
         "Very Short (Above ears)",
         "Short (Ears/neck visible)",
@@ -356,11 +368,16 @@ const TRANSLATIONS = {
         "Long (Shoulder length)",
         "Very Long (Below shoulder)"
     ],
-    q_scalp: "Scalp Type",
+    // 🆕 Hair Texture (EN)
+    q_hair_texture: "2. Hair Texture (Natural)",
+    hint_hair_texture: "💡 Please select based on natural hair without styling.",
+    opt_hair_texture: ["Straight", "Wavy", "Curly", "Not Sure"],
+
+    q_scalp: "3. Scalp Type",
     opt_scalp: ["Dry", "Oily", "Combination", "Normal"],
-    q_concern: "Concerns",
+    q_concern: "4. Concerns",
     opt_concern: ["Hair Loss", "Damage", "Dryness", "Split Ends", "Dandruff", "Itchiness", "None"],
-    q_history: "Recent History",
+    q_history: "5. Recent History",
     opt_yes: "Yes",
     opt_no: "No",
     q_history_type: "Treatment Type",
@@ -422,6 +439,7 @@ const TRANSLATIONS = {
     stats_new_ratio: "New Ratio",
     stats_concerns_rank: "Top Concerns",
     stats_scalp_dist: "Scalp Type",
+    stats_hair_texture: "Hair Texture", // New
     stats_mood_pref: "Service Mood",
     stats_massage_pref: "Massage Pref",
     stats_gender_dist: "Gender Dist", 
@@ -644,18 +662,29 @@ const Step0_PersonalInfo = ({ formData, updateField, phoneError, t }) => (
   </div>
 );
 
-// 💡 [Modified] Step 1 (Removed Gender, Updated Hair Length/Scalp)
+// 💡 [Modified] Step 1 (Added Hair Texture)
 const Step1_Basic = ({ formData, updateField, toggleCondition, toggleChemicalType, t }) => (
   <div className="animate-slide-up space-y-8">
     <div><SectionTitle icon={Scissors} title={t('step1_title')} /><div className="bg-[#f9fcf9] p-5 rounded-2xl border border-[#c4d6c5]/30 mb-6 text-sm text-slate-600 leading-relaxed">{t('step1_desc')}</div></div>
     
     <section>
         <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_hair_length')}</h3>
-        {/* [Modified] Use single column for detailed text */}
         <div className="grid grid-cols-1 gap-2">
             {t('opt_length').map((opt) => (<RadioCard key={opt} label={opt} value={opt} selected={formData.hairLength} onClick={(v) => updateField('hairLength', v)} />))}
         </div>
     </section>
+
+    {/* 🆕 [New] Hair Texture Section */}
+    <section>
+        <h3 className="text-sm font-bold text-slate-800 mb-1 pl-1">{t('q_hair_texture')}</h3>
+        <p className="text-xs text-slate-500 mb-3 pl-1">{t('hint_hair_texture')}</p>
+        <div className="grid grid-cols-2 gap-2">
+            {t('opt_hair_texture').map((opt) => (
+                <RadioCard key={opt} label={opt} value={opt} selected={formData.hairTexture} onClick={(v) => updateField('hairTexture', v)} />
+            ))}
+        </div>
+    </section>
+
     <section>
         <h3 className="text-sm font-bold text-slate-800 mb-3 pl-1">{t('q_scalp')}</h3>
         <div className="grid grid-cols-2 gap-2">
@@ -806,6 +835,8 @@ const Step3_Confirmation = ({ formData, t }) => {
       </SummaryCard>
       <SummaryCard title={t('section_status')}>
         <SummaryItem label={t('q_hair_length')} value={formData.hairLength} />
+        {/* 🆕 Hair Texture */}
+        <SummaryItem label={t('q_hair_texture')} value={formData.hairTexture} />
         <SummaryItem label={t('q_scalp')} value={formData.scalpType} />
         <SummaryItem label={t('q_concern')} value={formData.hairConditions} />
         <SummaryItem label={t('q_history')} value={getChemicalSummary()} />
@@ -859,14 +890,16 @@ const ClientView = ({ onBack, user, t }) => {
 
   const [formData, setFormData] = useState({
     name: '', phone: '', privacyAgreed: false, 
-    gender: '', // New
-    hairLength: '', scalpType: '', hairConditions: [],
+    gender: '', 
+    hairLength: '', 
+    hairTexture: '', // 🆕 New Field State
+    scalpType: '', hairConditions: [],
     chemicalHistory: '', chemicalHistoryTime: '', chemicalHistoryTypes: [], 
     massageIntensity: '', visitFrequency: '', shampooFrequency: '', products: [], 
     requests: '',
     stylingPreference: [], 
     medicationCheck: '', medicationTypes: [], medicationOther: '',
-    serviceMood: [] // 🆕 Service Mood Added
+    serviceMood: []
   });
 
   const updateField = (field, value) => {
@@ -957,6 +990,7 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
     const totalVisits = customers.length;
     const concerns = {};
     const scalpTypes = {};
+    const hairTextures = {}; // 🆕
     const moods = {};
     const massageIntensities = {}; // New
     const genders = {}; // New
@@ -985,6 +1019,12 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
         const jaScalp = getJapaneseValue('opt_scalp', c.scalpType);
         scalpTypes[jaScalp] = (scalpTypes[jaScalp] || 0) + 1;
       }
+      // 🆕 Hair Texture
+      if (c.hairTexture) {
+        const jaTexture = getJapaneseValue('opt_hair_texture', c.hairTexture);
+        hairTextures[jaTexture] = (hairTextures[jaTexture] || 0) + 1;
+      }
+
       // Mood
       if (c.serviceMood) {
         c.serviceMood.forEach(m => {
@@ -1006,7 +1046,7 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
     const retentionRate = totalUnique ? Math.round((regularCount / totalUnique) * 100) : 0;
     const newRatio = 100 - retentionRate;
 
-    return { totalVisits, concerns, scalpTypes, moods, massageIntensities, retentionRate, newRatio, genders };
+    return { totalVisits, concerns, scalpTypes, hairTextures, moods, massageIntensities, retentionRate, newRatio, genders };
   }, [customers, getJapaneseValue]);
 
   const renderBar = (label, count, total) => (
@@ -1073,6 +1113,12 @@ const StatsView = ({ customers, tAdmin, getJapaneseValue }) => {
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
           <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><PieChart className="w-4 h-4 text-[#8da38e]" /> {tAdmin('stats_scalp_dist')}</h3>
           {Object.entries(stats.scalpTypes).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
+        </div>
+
+        {/* 🆕 Hair Texture */}
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+          <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2"><Layers className="w-4 h-4 text-[#8da38e]" /> {tAdmin('stats_hair_texture')}</h3>
+          {Object.entries(stats.hairTextures).sort((a, b) => b[1] - a[1]).map(([k, v]) => renderBar(k, v, stats.totalVisits))}
         </div>
 
         {/* Massage Intensity (New) */}
@@ -1429,6 +1475,8 @@ const AdminDashboard = ({ onBack, user }) => {
                 <DashboardCard title={tAdmin('section_status')} icon={Scissors} className="border-t-4 border-t-[#8da38e]">
                   <DashboardRow label={tAdmin('q_gender')} value={getJapaneseValue('opt_gender', selectedCustomer.gender)} />
                   <DashboardRow label={tAdmin('q_hair_length')} value={getJapaneseValue('opt_length', selectedCustomer.hairLength)} />
+                  {/* 🆕 Hair Texture */}
+                  <DashboardRow label={tAdmin('q_hair_texture')} value={getJapaneseValue('opt_hair_texture', selectedCustomer.hairTexture)} />
                   <DashboardRow label={tAdmin('q_scalp')} value={getJapaneseValue('opt_scalp', selectedCustomer.scalpType)} />
                   <div className="mt-4 pt-4 border-t border-slate-50"><span className="text-xs font-bold text-[#f5ae71] block mb-1">{tAdmin('q_history')}</span>{selectedCustomer.chemicalHistory === 'yes' ? (<div className="bg-[#fff8f2] p-3 rounded-xl border border-[#f5ae71]/20"><div className="text-[#e08e50] font-bold text-sm mb-1">{getJapaneseValue('opt_time', selectedCustomer.chemicalHistoryTime)}</div><div className="flex gap-1 flex-wrap">{selectedCustomer.chemicalHistoryTypes?.map(t => <span key={t} className="text-[10px] bg-white text-[#e08e50] px-2 py-0.5 rounded border border-[#f5ae71]/20">{getJapaneseValue('opt_history_type', t)}</span>)}</div></div>) : <span className="text-slate-400 text-sm">{tAdmin('opt_no')}</span>}</div>
                 </DashboardCard>
