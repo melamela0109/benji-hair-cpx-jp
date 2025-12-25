@@ -1,4 +1,4 @@
-//머리 길이 구분 추가 + 모발 결(자연 상태) 추가
+// 모발 결(자연 상태) 추가
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ChevronRight, ChevronLeft, Check, User, Scissors, Sparkles, Plus, Trash2, 
